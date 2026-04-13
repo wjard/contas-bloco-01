@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Extratos Banco Inter - Cargas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <main class="layout">
+      <header class="hero reveal">
+        <p class="eyebrow">Extrato Banco Inter</p>
+        <h1>Extratos Consolidados em Uma Pagina</h1>
+        <p class="subtitle">Todos os CSVs do Banco Inter exibidos na mesma
+          pagina, separados por periodo.</p>
+      </header>
+      <section class="table-panel reveal delay-1" id="cargasInterContainer">
+        <div class="panel-head">
+          <h2>Lançamentos por Mes/Ano</h2>
+        </div>
+        <div id="tabelasTodasCargas" class="months-grid"></div>
+      </section>
+    </main>
+    <script src="dados-inter/todas-cargas.js"></script>
+    <script src="app-inter-index.js"></script>
+  </body>
+</html>

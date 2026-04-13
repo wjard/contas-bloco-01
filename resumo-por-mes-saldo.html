@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Extratos Banco Inter - Resumo por Mes (Saldo)</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap"
+            rel="stylesheet" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div class="noise"></div>
+        <main class="layout">
+            <header class="hero reveal" hidden>
+                <p class="eyebrow">Extrato Banco Inter</p>
+                <h1>Resumo por mes</h1>
+                <p class="subtitle">Entradas, saidas e saldo consolidado por
+                    mes.</p>
+                <p class="subtitle"><a href="index.html">Voltar para planilha
+                        detalhada</a></p>
+                <p class="subtitle"><a href="resumo-anual.html">Voltar para
+                        matriz anual por TAG</a></p>
+            </header>
+
+            <section class="table-panel reveal delay-1" id="resumoMesContainer">
+                <div class="panel-head">
+                    <h2>Resumo por mes (Entrou x Saiu)</h2>
+                </div>
+                <div id="tabelaResumoMes" class="months-grid"></div>
+            </section>
+        </main>
+
+        <script src="dados-inter/todas-cargas.js"></script>
+        <script src="app-inter-resumo-mes-saldo.js"></script>
+    </body>
+</html>
