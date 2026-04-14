@@ -134,15 +134,94 @@
         { nome: 'Devolução', classe: 'cat-devolucao' },
         { nome: 'Material Limpeza', classe: 'cat-materiais' },
         { nome: 'Terceiros', classe: 'cat-terceiros' },
+        { nome: 'Outros', classe: 'cat-outros' },
     ];
 
     const CLASSE_CATEGORIA = new Map(
         LEGENDA_CATEGORIAS.map((item) => [item.nome, item.classe]),
     );
 
+    // Config opcional para definir manualmente quebras de linha nos titulos das colunas.
+    // Exemplo: { 'Repasse Condo. Geral': 'Repasse Condo.<br>Geral' }
+    const CONFIG_ROTULO_TAG_COLUNA = {
+        'Boleto Condo. Bloco': 'Boleto Cond.<br>Bloco',
+        'Repasse Condo. Geral': 'Repasse Cond.<br>Geral',
+        'Material Limpeza': 'Material<br>Limpeza',
+        'Conta Consumo': 'Conta<br>Consumo',
+        'Rateio Agua': 'Rateio<br>Água',
+        'Seguro/Manut.': 'Seguro/<br>Manut.',
+    };
+    const LIMITE_CHARS_TAG_COLUNA = 16;
+
     const categoriasAtivas = new Set();
     let mostrarTabelaMobile = false;
     let mostrarTodasTagsMobileTabela = false;
+
+    const quebrarPalavraPorLimite = (palavra, limite) => {
+        const partes = [];
+        let restante = String(palavra || '');
+
+        while (restante.length > limite) {
+            partes.push(restante.slice(0, limite));
+            restante = restante.slice(limite);
+        }
+
+        if (restante) partes.push(restante);
+        return partes;
+    };
+
+    const empilharPalavraLonga = (palavra, limite, linhas) => {
+        const partes = quebrarPalavraPorLimite(palavra, limite);
+        if (!partes.length) return '';
+        linhas.push(...partes.slice(0, -1));
+        return partes.at(-1) || '';
+    };
+
+    const quebrarTextoPorLimite = (texto, limite) => {
+        const textoLimpo = String(texto || '').trim();
+        if (!textoLimpo) return '';
+        if (textoLimpo.length <= limite) return escapeHtml(textoLimpo);
+
+        const palavras = textoLimpo.split(/\s+/);
+        const linhas = [];
+        let linhaAtual = '';
+
+        for (const palavra of palavras) {
+            const candidato = linhaAtual ? `${linhaAtual} ${palavra}` : palavra;
+
+            if (candidato.length <= limite) {
+                linhaAtual = candidato;
+                continue;
+            }
+
+            if (linhaAtual) {
+                linhas.push(linhaAtual);
+            }
+
+            if (palavra.length <= limite) {
+                linhaAtual = palavra;
+                continue;
+            }
+
+            linhaAtual = empilharPalavraLonga(palavra, limite, linhas);
+        }
+
+        if (linhaAtual) linhas.push(linhaAtual);
+        return linhas.map((item) => escapeHtml(item)).join('<br>');
+    };
+
+    const formatarRotuloColunaTag = (nomeTag) => {
+        const valorConfigurado = CONFIG_ROTULO_TAG_COLUNA[nomeTag];
+        if (valorConfigurado) {
+            return String(valorConfigurado)
+                .split(/<br\s*\/?\s*>/i)
+                .map((parte) => escapeHtml(parte.trim()))
+                .filter(Boolean)
+                .join('<br>');
+        }
+
+        return quebrarTextoPorLimite(nomeTag, LIMITE_CHARS_TAG_COLUNA);
+    };
 
     const classificarCategoria = (descricao) => {
         const desc = normalizar(descricao);
@@ -387,7 +466,7 @@
         const cabecalhoTags = tagsComMeta
             .map(
                 (tag) =>
-                    `<th class="${tag.opcional ? 'optional-col' : ''}">${escapeHtml(tag.nome)}</th>`,
+                    `<th class="${tag.opcional ? 'optional-col' : ''}">${formatarRotuloColunaTag(tag.nome)}</th>`,
             )
             .join('');
 
