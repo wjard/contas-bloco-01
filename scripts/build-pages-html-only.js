@@ -8,6 +8,12 @@ const isExternalUrl = (value) => /^(https?:)?\/\//i.test(value || '');
 
 const readText = (filePath) => fs.readFileSync(filePath, 'utf8');
 
+const escapeInlineScriptContent = (content) =>
+    String(content || '').replaceAll('</script>', String.raw`<\/script>`);
+
+const escapeInlineStyleContent = (content) =>
+    String(content || '').replaceAll('</style>', String.raw`<\/style>`);
+
 const resolveLocalAsset = (htmlPath, assetPath) => {
     const normalized = String(assetPath || '').trim();
     if (!normalized || isExternalUrl(normalized)) return null;
@@ -20,6 +26,17 @@ const resolveLocalAsset = (htmlPath, assetPath) => {
     return resolved;
 };
 
+const shouldDropScriptFromPublishedHtml = (src) => {
+    const normalized = String(src || '')
+        .trim()
+        .replaceAll('\\', '/')
+        .toLowerCase();
+    return (
+        normalized === 'scripts/gerar-dados.js' ||
+        normalized === 'scripts/gerar-dados-inter.js'
+    );
+};
+
 const inlineStyles = (html, htmlPath) => {
     const linkRegex =
         /<link\s+[^>]*href=["']([^"']+\.css(?:\?[^"']*)?)["'][^>]*>/gi;
@@ -28,7 +45,7 @@ const inlineStyles = (html, htmlPath) => {
         const filePath = resolveLocalAsset(htmlPath, href);
         if (!filePath) return fullMatch;
 
-        const css = readText(filePath);
+        const css = escapeInlineStyleContent(readText(filePath));
         return `<style>\n${css}\n</style>`;
     });
 };
@@ -40,10 +57,14 @@ const inlineScripts = (html, htmlPath) => {
     return html.replace(
         scriptRegex,
         (fullMatch, beforeAttrs, src, afterAttrs) => {
+            if (shouldDropScriptFromPublishedHtml(src)) {
+                return '';
+            }
+
             const filePath = resolveLocalAsset(htmlPath, src);
             if (!filePath) return fullMatch;
 
-            const script = readText(filePath);
+            const script = escapeInlineScriptContent(readText(filePath));
             const attrs = `${beforeAttrs || ''}${afterAttrs || ''}`.trim();
             const attrText = attrs ? ` ${attrs}` : '';
             return `<script${attrText}>\n${script}\n</script>`;
