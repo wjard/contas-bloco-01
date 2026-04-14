@@ -1,13 +1,15 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Extrato Extrato-01-01-2025-a-31-12-2025-CSV</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <style>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Extrato Extrato-01-01-2025-a-31-12-2025-CSV</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap"
+            rel="stylesheet" />
+        <style>
 :root {
     --bg: #f7f1e8;
     --bg-2: #f0dfce;
@@ -1228,32 +1230,35 @@ td.positive {
 }
 
 </style>
-</head>
-<body>
-  <div class="noise"></div>
-  <main class="layout">
-    <header class="hero reveal">
-    <p class="eyebrow">Extrato Bancário</p>
-      <h1>Extrato Extrato-01-01-2025-a-31-12-2025-CSV</h1>
-      <p class="subtitle">Tabela mensal detalhada de entradas e saidas com base no CSV.</p>
-      <div class="page-switcher">
-        <label for="cargaSelectDetalhe">Escolher carga:</label>
-        <select id="cargaSelectDetalhe">
-          <option value="">Carregando opcoes...</option>
-        </select>
-      </div>
-      <p class="subtitle"><a href="extrato-index.html">Voltar para selecao de cargas</a></p>
-    </header>
-    <section class="cards reveal delay-1" id="resumoCards"></section>
-    <section class="table-panel reveal delay-2">
-      <div class="panel-head">
-        <h2>Tabelas Detalhadas por Mes/Ano</h2>
-        <p>Fonte: dados-extrato/extrato-01-01-2025-a-31-12-2025-csv.js</p>
-      </div>
-      <div id="tabelasMeses" class="months-grid"></div>
-    </section>
-  </main>
-  <script>
+    </head>
+    <body>
+        <div class="noise"></div>
+        <main class="layout">
+            <header class="hero reveal">
+                <p class="eyebrow">Extrato Bancário</p>
+                <h1>Extrato Extrato-01-01-2025-a-31-12-2025-CSV</h1>
+                <p class="subtitle">Tabela mensal detalhada de entradas e saidas
+                    com base no CSV.</p>
+                <div class="page-switcher">
+                    <label for="cargaSelectDetalhe">Escolher carga:</label>
+                    <select id="cargaSelectDetalhe">
+                        <option value>Carregando opcoes...</option>
+                    </select>
+                </div>
+                <p class="subtitle"><a href="extrato-index.html">Voltar para
+                        selecao de cargas</a></p>
+            </header>
+            <section class="cards reveal delay-1" id="resumoCards"></section>
+            <section class="table-panel reveal delay-2">
+                <div class="panel-head">
+                    <h2>Tabelas Detalhadas por Mes/Ano</h2>
+                    <p>Fonte:
+                        dados-extrato/extrato-01-01-2025-a-31-12-2025-csv.js</p>
+                </div>
+                <div id="tabelasMeses" class="months-grid"></div>
+            </section>
+        </main>
+        <script>
 window.EXTRATO_CARGAS = [
     {
         arquivoCsv: 'Extrato-01-04-2026-a-14-04-2026-CSV.csv',
@@ -1287,7 +1292,7 @@ window.EXTRATO_CARGAS = [
 window.EXTRATO_CARGAS;
 
 </script>
-  <script>
+        <script>
 window.DADOS_FINANCEIROS = {
     "arquivo": "Extrato-01-01-2025-a-31-12-2025-CSV.csv",
     "atualizadoEm": "2026-04-14T22:03:15.290Z",
@@ -3650,7 +3655,7 @@ window.DADOS_FINANCEIROS = {
 };
 
 </script>
-    <script>
+        <script>
 (function () {
     const escapeHtml = (texto) =>
         String(texto)
@@ -3725,7 +3730,7 @@ window.DADOS_FINANCEIROS = {
 })();
 
 </script>
-    <script>
+        <script>
 (function () {
     const ORDEM_MESES = [
         'JANEIRO',
@@ -3951,7 +3956,7 @@ window.DADOS_FINANCEIROS = {
 })();
 
 </script>
-    <script>
+        <script>
 (function () {
     const normalizar = (texto) =>
         String(texto || '')
@@ -4070,7 +4075,7 @@ window.DADOS_FINANCEIROS = {
 })();
 
 </script>
-  <script>
+        <script>
 (function () {
     const dados = globalThis.DADOS_FINANCEIROS;
     const cargas = globalThis.EXTRATO_CARGAS || [];
@@ -4216,5 +4221,5 @@ window.DADOS_FINANCEIROS = {
 })();
 
 </script>
-</body>
+    </body>
 </html>
