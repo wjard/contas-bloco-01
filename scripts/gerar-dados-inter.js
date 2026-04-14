@@ -144,6 +144,32 @@
         return crypto.createHash('sha256').update(buffer).digest('hex');
     }
 
+    function extrairTimestampFinalCsv(nomeArquivo) {
+        const matchFinal = String(nomeArquivo).match(
+            /-a-(\d{2})-(\d{2})-(\d{4})-csv\.csv$/i,
+        );
+        if (matchFinal) {
+            const dia = Number.parseInt(matchFinal[1], 10);
+            const mes = Number.parseInt(matchFinal[2], 10);
+            const ano = Number.parseInt(matchFinal[3], 10);
+            const ts = Date.UTC(ano, mes - 1, dia);
+            if (Number.isFinite(ts)) return ts;
+        }
+
+        const matchInicio = String(nomeArquivo).match(
+            /^extrato-(\d{2})-(\d{2})-(\d{4})-a-/i,
+        );
+        if (matchInicio) {
+            const dia = Number.parseInt(matchInicio[1], 10);
+            const mes = Number.parseInt(matchInicio[2], 10);
+            const ano = Number.parseInt(matchInicio[3], 10);
+            const ts = Date.UTC(ano, mes - 1, dia);
+            if (Number.isFinite(ts)) return ts;
+        }
+
+        return 0;
+    }
+
     function lerCache() {
         if (!fs.existsSync(cacheFile)) {
             return {
@@ -412,7 +438,12 @@
             .filter((ent) => ent.isFile())
             .map((ent) => ent.name)
             .filter((nome) => nome.toLowerCase().endsWith('.csv'))
-            .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+            .sort((a, b) => {
+                const tsA = extrairTimestampFinalCsv(a);
+                const tsB = extrairTimestampFinalCsv(b);
+                if (tsA !== tsB) return tsB - tsA;
+                return b.localeCompare(a, 'pt-BR');
+            });
 
         const manifest = [];
         const todasCargas = [];

@@ -254,11 +254,11 @@
         }
 
         return Array.from(anosMap.entries())
-            .sort((a, b) => a[0] - b[0])
+            .sort((a, b) => b[0] - a[0])
             .map(([ano, mesesMap]) => ({
                 ano,
                 meses: Array.from(mesesMap.values()).sort(
-                    (a, b) => a.ordemMes - b.ordemMes,
+                    (a, b) => b.ordemMes - a.ordemMes,
                 ),
             }));
     };

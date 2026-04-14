@@ -90,7 +90,7 @@
         }
 
         return Array.from(mapMeses.values()).sort(
-            (a, b) => a.ano - b.ano || a.ordemMes - b.ordemMes,
+            (a, b) => b.ano - a.ano || b.ordemMes - a.ordemMes,
         );
     };
 

@@ -26,6 +26,29 @@
             .replaceAll('"', '&quot;')
             .replaceAll("'", '&#39;');
 
+    const ORDEM_MESES = [
+        'JANEIRO',
+        'FEVEREIRO',
+        'MARCO',
+        'ABRIL',
+        'MAIO',
+        'JUNHO',
+        'JULHO',
+        'AGOSTO',
+        'SETEMBRO',
+        'OUTUBRO',
+        'NOVEMBRO',
+        'DEZEMBRO',
+    ];
+
+    const extrairOrdemMesAno = (mesTexto) => {
+        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
+        const ano = Number.parseInt(anoTexto, 10);
+        const mes = ORDEM_MESES.indexOf(mesNome);
+        if (!Number.isFinite(ano) || mes < 0) return { ano: 0, mes: -1 };
+        return { ano, mes };
+    };
+
     const cards = [
         {
             titulo: 'Arquivo',
@@ -83,7 +106,13 @@
     }
 
     const tabelasMeses = document.getElementById('tabelasMeses');
-    tabelasMeses.innerHTML = (dados.porMes || [])
+    const mesesOrdenados = [...(dados.porMes || [])].sort((a, b) => {
+        const ordemA = extrairOrdemMesAno(a.mes);
+        const ordemB = extrairOrdemMesAno(b.mes);
+        return ordemB.ano - ordemA.ano || ordemB.mes - ordemA.mes;
+    });
+
+    tabelasMeses.innerHTML = mesesOrdenados
         .map((mes) => {
             const saldoClass = mes.saldo >= 0 ? 'positive' : 'negative';
 

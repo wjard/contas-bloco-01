@@ -124,6 +124,51 @@
 
     const categoriasAtivas = new Set();
 
+    const ORDEM_MESES = [
+        'JANEIRO',
+        'FEVEREIRO',
+        'MARCO',
+        'ABRIL',
+        'MAIO',
+        'JUNHO',
+        'JULHO',
+        'AGOSTO',
+        'SETEMBRO',
+        'OUTUBRO',
+        'NOVEMBRO',
+        'DEZEMBRO',
+    ];
+
+    const extrairOrdemMesAno = (mesTexto) => {
+        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
+        const ano = Number.parseInt(anoTexto, 10);
+        const mes = ORDEM_MESES.indexOf(mesNome);
+        if (!Number.isFinite(ano) || mes < 0) return { ano: 0, mes: -1 };
+        return { ano, mes };
+    };
+
+    const ordenarMesesDesc = (meses) => {
+        return [...(meses || [])].sort((a, b) => {
+            const ordemA = extrairOrdemMesAno(a.mes);
+            const ordemB = extrairOrdemMesAno(b.mes);
+            return ordemB.ano - ordemA.ano || ordemB.mes - ordemA.mes;
+        });
+    };
+
+    const ordenarCargasDesc = (listaCargas) => {
+        const obterOrdemCarga = (carga) => {
+            const meses = ordenarMesesDesc(carga.porMes || []);
+            if (!meses.length) return { ano: 0, mes: -1 };
+            return extrairOrdemMesAno(meses[0].mes);
+        };
+
+        return [...(listaCargas || [])].sort((a, b) => {
+            const ordemA = obterOrdemCarga(a);
+            const ordemB = obterOrdemCarga(b);
+            return ordemB.ano - ordemA.ano || ordemB.mes - ordemA.mes;
+        });
+    };
+
     const classificarCategoria = (descricao) => {
         const desc = normalizar(descricao);
         const regra = REGRAS_CATEGORIA.find((item) => item.test(desc));
@@ -302,9 +347,9 @@
     };
 
     const renderTela = () => {
-        const secoesCargas = cargas
+        const secoesCargas = ordenarCargasDesc(cargas)
             .map((carga) => {
-                const mesesFonte = carga.porMes || [];
+                const mesesFonte = ordenarMesesDesc(carga.porMes || []);
                 const mesesRender = categoriasAtivas.size
                     ? mesesFonte.filter(
                           (mes) =>
