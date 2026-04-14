@@ -1,0 +1,44 @@
+name: Update Docs (HTML Only)
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - docs/**
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-commit-docs:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build docs (HTML only)
+        run: node ./scripts/build-pages-html-only.js
+
+      - name: Commit docs changes
+        shell: bash
+        run: |
+          if git diff --quiet -- docs; then
+            echo "No changes in docs/."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          git commit -m "chore(pages): update docs html-only [skip ci]"
+          git push
