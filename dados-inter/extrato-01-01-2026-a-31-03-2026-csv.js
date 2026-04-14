@@ -1,6 +1,6 @@
 window.DADOS_FINANCEIROS = {
     "arquivo": "Extrato-01-01-2026-a-31-03-2026-CSV.csv",
-    "atualizadoEm": "2026-04-14T15:34:22.593Z",
+    "atualizadoEm": "2026-04-14T19:34:21.828Z",
     "periodo": {
         "inicio": "JANEIRO-2026",
         "fim": "MARCO-2026"
@@ -266,16 +266,16 @@ window.DADOS_FINANCEIROS = {
                 {
                     "linhaCsv": 36,
                     "data": "05/02/2026",
-                    "descricao": "Boleto de cobranca recebido: \"112/90581429613\"",
-                    "valor": 225.72,
-                    "saldoConta": 10607.3,
+                    "descricao": "Boleto de cobranca recebido: \"112/90581458760\"",
+                    "valor": 273.7,
+                    "saldoConta": 10655.28,
                     "tipo": "entrada"
                 },
                 {
                     "linhaCsv": 37,
                     "data": "05/02/2026",
-                    "descricao": "Boleto de cobranca recebido: \"112/90581458760\"",
-                    "valor": 273.7,
+                    "descricao": "Boleto de cobranca recebido: \"112/90581429613\"",
+                    "valor": 225.72,
                     "saldoConta": 10881,
                     "tipo": "entrada"
                 },

@@ -61,6 +61,9 @@
             rotulo: info.rotulo,
             entradas: 0,
             saidas: 0,
+            saldoGeral: null,
+            _ultimaDataOrdem: 0,
+            _ultimaLinhaCsv: 0,
         };
 
         mapMeses.set(info.chave, base);
@@ -74,6 +77,27 @@
                 acumulador.entradas += valor;
             } else {
                 acumulador.saidas += valor;
+            }
+
+            const saldoConta = Number(item.saldoConta);
+            if (!Number.isFinite(saldoConta)) continue;
+
+            const [dia, mes, ano] = String(item.data || '').split('/');
+            const dataOrdem =
+                Number(ano || 0) * 10000 +
+                Number(mes || 0) * 100 +
+                Number(dia || 0);
+            const linhaCsv = Number(item.linhaCsv || 0);
+
+            const deveAtualizarSaldo =
+                dataOrdem > acumulador._ultimaDataOrdem ||
+                (dataOrdem === acumulador._ultimaDataOrdem &&
+                    linhaCsv >= acumulador._ultimaLinhaCsv);
+
+            if (deveAtualizarSaldo) {
+                acumulador._ultimaDataOrdem = dataOrdem;
+                acumulador._ultimaLinhaCsv = linhaCsv;
+                acumulador.saldoGeral = saldoConta;
             }
         }
     };
@@ -164,12 +188,18 @@
             .map((item) => {
                 const saldo = item.entradas - item.saidas;
                 const saldoClass = saldo >= 0 ? 'positive' : 'negative';
+                const saldoGeral = Number.isFinite(item.saldoGeral)
+                    ? item.saldoGeral
+                    : saldo;
+                const saldoGeralClass =
+                    saldoGeral >= 0 ? 'positive' : 'negative';
                 return `
                     <tr>
                         <td>${escapeHtml(item.rotulo)}</td>
                         <td class="positive">${moeda.format(item.entradas)}</td>
                         <td class="negative">${moeda.format(item.saidas)}</td>
                         <td class="${saldoClass}">${moeda.format(saldo)}</td>
+                        <td class="${saldoGeralClass}">${moeda.format(saldoGeral)}</td>
                     </tr>
                 `;
             })
@@ -179,6 +209,11 @@
             .map((item) => {
                 const saldo = item.entradas - item.saidas;
                 const saldoClass = saldo >= 0 ? 'positive' : 'negative';
+                const saldoGeral = Number.isFinite(item.saldoGeral)
+                    ? item.saldoGeral
+                    : saldo;
+                const saldoGeralClass =
+                    saldoGeral >= 0 ? 'positive' : 'negative';
                 const volume = item.entradas + item.saidas;
 
                 return `
@@ -200,11 +235,21 @@
                                 <small>Movimentacao</small>
                                 <strong>${moeda.format(volume)}</strong>
                             </div>
+                            <div>
+                                <small>Saldo geral</small>
+                                <strong class="${saldoGeralClass}">${moeda.format(saldoGeral)}</strong>
+                            </div>
                         </div>
                     </article>
                 `;
             })
             .join('');
+
+        const saldoGeralAtual = Number.isFinite(mesesOrdenados[0]?.saldoGeral)
+            ? mesesOrdenados[0].saldoGeral
+            : resumoRapido.saldoGeral;
+        const saldoGeralAtualClass =
+            saldoGeralAtual >= 0 ? 'positive' : 'negative';
 
         const textoToggleMobile = mostrarTabelaMobile
             ? 'Ver cards mobile'
@@ -212,7 +257,7 @@
 
         alvo.innerHTML = `
             <section class="resumo-mes-layout ${mostrarTabelaMobile ? 'show-table-mobile' : ''}">
-                <section class="resumo-rapido-panel">
+                <section style="display: none"class="resumo-rapido-panel">
                     <article class="resumo-rapido-item">
                         <small>Ultimo mes</small>
                         <strong>${escapeHtml(resumoRapido.rotuloUltimoMes)}</strong>
@@ -234,7 +279,7 @@
                 </div>
                 <div class="resumo-mes-mobile-list">
                     ${cards || '<article class="resumo-mes-card-mobile"><p class="cell-empty">Nenhum dado encontrado.</p></article>'}
-                    <article class="resumo-mes-card-mobile resumo-mes-total-card">
+                    <article  style="display: none" class="resumo-mes-card-mobile resumo-mes-total-card">
                         <header class="resumo-mes-card-head">
                             <h3>Total Geral</h3>
                             <strong class="${resumoRapido.saldoGeralClass}">${moeda.format(resumoRapido.saldoGeral)}</strong>
@@ -252,6 +297,10 @@
                                 <small>Movimentacao</small>
                                 <strong>${moeda.format(totais.entradas + totais.saidas)}</strong>
                             </div>
+                            <div>
+                                <small>Saldo geral atual</small>
+                                <strong class="${saldoGeralAtualClass}">${moeda.format(saldoGeralAtual)}</strong>
+                            </div>
                         </div>
                     </article>
                 </div>
@@ -263,17 +312,19 @@
                                 <th>Entradas</th>
                                 <th>Saidas</th>
                                 <th>Saldo</th>
+                                <th>Saldo geral</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${linhas || '<tr><td colspan="4">Nenhum dado encontrado.</td></tr>'}
+                            ${linhas || '<tr><td colspan="5">Nenhum dado encontrado.</td></tr>'}
                         </tbody>
-                        <tfoot>
+                        <tfoot style="display: none">
                             <tr>
                                 <th>Total Geral</th>
                                 <th class="positive">${moeda.format(totais.entradas)}</th>
                                 <th class="negative">${moeda.format(totais.saidas)}</th>
                                 <th class="${resumoRapido.saldoGeralClass}">${moeda.format(resumoRapido.saldoGeral)}</th>
+                                <th class="${saldoGeralAtualClass}">${moeda.format(saldoGeralAtual)}</th>
                             </tr>
                         </tfoot>
                     </table>

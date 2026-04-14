@@ -1,6 +1,6 @@
 window.DADOS_FINANCEIROS = {
     "arquivo": "Extrato-01-01-2025-a-31-12-2025-CSV.csv",
-    "atualizadoEm": "2026-04-14T15:34:22.587Z",
+    "atualizadoEm": "2026-04-14T19:34:21.844Z",
     "periodo": {
         "inicio": "JANEIRO-2025",
         "fim": "DEZEMBRO-2025"
@@ -2337,16 +2337,16 @@ window.DADOS_FINANCEIROS = {
                 {
                     "linhaCsv": 283,
                     "data": "30/12/2025",
-                    "descricao": "Pix enviado: \"Cp :60746948-Flavia Lee Cardoso Dias\"",
-                    "valor": -100,
-                    "saldoConta": 9180.8,
+                    "descricao": "Pix enviado: \"Cp :18236120-Maria Edina Ferreira da Penha\"",
+                    "valor": -170,
+                    "saldoConta": 9110.8,
                     "tipo": "saida"
                 },
                 {
                     "linhaCsv": 284,
                     "data": "30/12/2025",
-                    "descricao": "Pix enviado: \"Cp :18236120-Maria Edina Ferreira da Penha\"",
-                    "valor": -170,
+                    "descricao": "Pix enviado: \"Cp :60746948-Flavia Lee Cardoso Dias\"",
+                    "valor": -100,
                     "saldoConta": 9010.8,
                     "tipo": "saida"
                 }

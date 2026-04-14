@@ -417,6 +417,7 @@
   </main>
   <script src="dados-inter/manifest.js"></script>
   <script src="${carga.dadosJs}"></script>
+    <script src="inter-privacy-utils.js"></script>
   <script src="app-inter.js"></script>
 </body>
 </html>

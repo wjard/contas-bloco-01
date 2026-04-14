@@ -1,7 +1,7 @@
 Extrato Conta Corrente 
 Conta ;379775476
-Período ;01/01/2026 a 27/03/2026
-Saldo: ;8.663,06
+Período ;01/01/2026 a 31/03/2026
+Saldo: ;9.466,94
 
 Data Lançamento;Descrição;Valor;Saldo
 02/01/2026;Pix enviado: "Cp :00360305-LIDIA CAROLINA VALADARES ROCHA";-29,00;8.981,80
@@ -34,8 +34,8 @@ Data Lançamento;Descrição;Valor;Saldo
 02/02/2026;Pix recebido: "Cp :00360305-WELINGTON SERGIO DE LIMA";228,54;9.421,56
 02/02/2026;Pix recebido: "Cp :90400888-POLLYANNA ORNELAS RIBEIRO DE OLIVEIRA";757,79;10.179,35
 02/02/2026;Boleto de cobranca recebido: "112/90581426858";202,23;10.381,58
-05/02/2026;Boleto de cobranca recebido: "112/90581429613";225,72;10.607,30
-05/02/2026;Boleto de cobranca recebido: "112/90581458760";273,70;10.881,00
+05/02/2026;Boleto de cobranca recebido: "112/90581458760";273,70;10.655,28
+05/02/2026;Boleto de cobranca recebido: "112/90581429613";225,72;10.881,00
 06/02/2026;Boleto de cobranca recebido: "112/90581423715";225,77;11.106,77
 06/02/2026;Boleto de cobranca recebido: "112/90596282262";246,08;11.352,85
 09/02/2026;Pix enviado: "Cp :60701190-Mariana da Silva Morais";-610,00;10.742,85

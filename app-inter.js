@@ -26,6 +26,11 @@
             .replaceAll('"', '&quot;')
             .replaceAll("'", '&#39;');
 
+    const privacyUtils = globalThis.INTER_PRIVACY_UTILS || {
+        classificarCategoria: () => 'Outros',
+        anonimizarDescricaoPorCategoria: (descricao) => descricao,
+    };
+
     const ORDEM_MESES = [
         'JANEIRO',
         'FEVEREIRO',
@@ -124,11 +129,19 @@
                         item.tipo === 'entrada' ? 'Entrada' : 'Saida';
                     const valorClass =
                         item.valor >= 0 ? 'positive' : 'negative';
+                    const categoria = privacyUtils.classificarCategoria(
+                        item.descricao,
+                    );
+                    const descricaoExibicao =
+                        privacyUtils.anonimizarDescricaoPorCategoria(
+                            item.descricao,
+                            categoria,
+                        );
 
                     return `
                         <tr>
                             <td>${escapeHtml(item.data)}</td>
-                            <td>${escapeHtml(item.descricao)}</td>
+                            <td>${escapeHtml(descricaoExibicao)}</td>
                             <td class="${tipoClass}">${tipoTexto}</td>
                             <td class="${valorClass}">${moeda.format(item.valor)}</td>
                             <td>${moeda.format(item.saldoConta || 0)}</td>

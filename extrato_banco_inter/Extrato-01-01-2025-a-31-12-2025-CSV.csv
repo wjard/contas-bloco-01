@@ -1,7 +1,7 @@
 Extrato Conta Corrente 
 Conta ;379775476
 Período ;01/01/2025 a 31/12/2025
-Saldo: ;8.663,06
+Saldo: ;9.466,94
 
 Data Lançamento;Descrição;Valor;Saldo
 02/01/2025;Boleto de cobranca recebido: "112/90154447042";192,46;13.380,79
@@ -281,5 +281,5 @@ Data Lançamento;Descrição;Valor;Saldo
 26/12/2025;Boleto de cobranca recebido: "112/90543958915";203,55;8.926,60
 29/12/2025;Boleto de cobranca recebido: "112/90543996501";167,89;9.094,49
 29/12/2025;Boleto de cobranca recebido: "112/90543981909";186,31;9.280,80
-30/12/2025;Pix enviado: "Cp :60746948-Flavia Lee Cardoso Dias";-100,00;9.180,80
-30/12/2025;Pix enviado: "Cp :18236120-Maria Edina Ferreira da Penha";-170,00;9.010,80
+30/12/2025;Pix enviado: "Cp :18236120-Maria Edina Ferreira da Penha";-170,00;9.110,80
+30/12/2025;Pix enviado: "Cp :60746948-Flavia Lee Cardoso Dias";-100,00;9.010,80

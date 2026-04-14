@@ -24,89 +24,10 @@
 
     const limitarTag = (texto) => String(texto).slice(0, 20);
 
-    const temTodos = (texto, termos) =>
-        termos.every((termo) => texto.includes(termo));
-
-    const REGRAS_CATEGORIA = [
-        {
-            tag: 'Boleto Condo. Bloco',
-            test: (d) =>
-                d.includes('boleto de cobranca recebido') ||
-                d.includes('pix recebido: "') ||
-                temTodos(d, ['pix recebido', 'cp']),
-        },
-        {
-            tag: 'Gratificação Subsind',
-            test: (d) =>
-                temTodos(d, ['pix enviado', 'glayce kelly calisto pena']) ||
-                temTodos(d, ['pix enviado', 'mariana']),
-        },
-        {
-            tag: 'Gratificação Limpeza',
-            test: (d) => temTodos(d, ['pix enviado', 'maria edina ferreira']),
-        },
-        {
-            tag: 'Conta Consumo',
-            test: (d) =>
-                d.includes('pagamento copasa') ||
-                d.includes('companhia de saneamento') ||
-                d.includes('pagamento cemig') ||
-                d.includes('pix enviado cemig') ||
-                d.includes('pix enviado copasa') ||
-                d.includes('cemig distribuicao') ||
-                d.includes('copasa minas gerais') ||
-                d.includes('copasa mg'),
-        },
-        {
-            tag: 'Rateio Agua',
-            test: (d) =>
-                temTodos(d, ['pix enviado', '60701190-seu consumo']) ||
-                d.includes('seu consumo') ||
-                d.includes('seu cosumo') ||
-                temTodos(d, ['leitura', 'hidrometro']),
-        },
-        {
-            tag: 'Repasse Condo. Geral',
-            test: (d) =>
-                temTodos(d, [
-                    'pagamento de titulo',
-                    'residencial village da fonte',
-                ]) ||
-                temTodos(d, ['pix enviado', 'residencial village da fonte']) ||
-                temTodos(d, ['pix', 'sandro']) ||
-                d.includes('sandro souza'),
-        },
-        {
-            tag: 'Seguro/Manut.',
-            test: (d) => {
-                return (
-                    d.includes('tokio marine seguradora') ||
-                    d.includes('seguradora') ||
-                    d.includes('seguradoras') ||
-                    d.includes('desinsetizadora') ||
-                    d.includes('desentupidora') ||
-                    temTodos(d, ['pix enviado', 'incendio']) ||
-                    d.includes('nitro')
-                );
-            },
-        },
-        {
-            tag: 'Devolução',
-            test: (d) => temTodos(d, ['pix enviado', 'gleidstone']),
-        },
-        {
-            tag: 'Material Limpeza',
-            test: (d) =>
-                temTodos(d, ['pix enviado', 'supermercados bh']) ||
-                temTodos(d, ['pix enviado', 'comercio de alimentos']),
-        },
-        {
-            tag: 'Terceiros',
-            test: (d) =>
-                d.includes('pagamento efetuado') ||
-                temTodos(d, ['pix enviado', 'cp']),
-        },
-    ];
+    const privacyUtils = globalThis.INTER_PRIVACY_UTILS || {
+        classificarCategoria: () => 'Outros',
+        anonimizarDescricaoPorCategoria: (descricao) => descricao,
+    };
 
     const LEGENDA_CATEGORIAS = [
         { nome: 'Boleto Condo. Bloco', classe: 'cat-boleto' },
@@ -147,34 +68,6 @@
         return { ano, mes };
     };
 
-    const ordenarMesesDesc = (meses) => {
-        return [...(meses || [])].sort((a, b) => {
-            const ordemA = extrairOrdemMesAno(a.mes);
-            const ordemB = extrairOrdemMesAno(b.mes);
-            return ordemB.ano - ordemA.ano || ordemB.mes - ordemA.mes;
-        });
-    };
-
-    const ordenarCargasDesc = (listaCargas) => {
-        const obterOrdemCarga = (carga) => {
-            const meses = ordenarMesesDesc(carga.porMes || []);
-            if (!meses.length) return { ano: 0, mes: -1 };
-            return extrairOrdemMesAno(meses[0].mes);
-        };
-
-        return [...(listaCargas || [])].sort((a, b) => {
-            const ordemA = obterOrdemCarga(a);
-            const ordemB = obterOrdemCarga(b);
-            return ordemB.ano - ordemA.ano || ordemB.mes - ordemA.mes;
-        });
-    };
-
-    const classificarCategoria = (descricao) => {
-        const desc = normalizar(descricao);
-        const regra = REGRAS_CATEGORIA.find((item) => item.test(desc));
-        return regra ? regra.tag : 'Outros';
-    };
-
     const getClasseCategoria = (categoria) => {
         const valor = normalizar(categoria);
 
@@ -193,7 +86,7 @@
     };
 
     const getCategoriaLancamento = (item) =>
-        limitarTag(classificarCategoria(item.descricao));
+        limitarTag(privacyUtils.classificarCategoria(item.descricao));
 
     const normalizarUrlComprovante = (valor) => {
         const texto = String(valor || '').trim();
@@ -248,6 +141,47 @@
         );
     };
 
+    const construirAnos = () => {
+        const anosMap = new Map();
+
+        for (const carga of cargas) {
+            for (const mes of carga.porMes || []) {
+                const ordem = extrairOrdemMesAno(mes.mes);
+                if (!ordem.ano || ordem.mes < 0) continue;
+
+                if (!anosMap.has(ordem.ano)) {
+                    anosMap.set(ordem.ano, new Map());
+                }
+
+                const mesesMap = anosMap.get(ordem.ano);
+                const chaveMes = `${ordem.ano}-${String(ordem.mes + 1).padStart(2, '0')}`;
+                const entradaExistente = mesesMap.get(chaveMes);
+
+                if (entradaExistente) {
+                    entradaExistente.lancamentos.push(
+                        ...(mes.lancamentos || []),
+                    );
+                    continue;
+                }
+
+                mesesMap.set(chaveMes, {
+                    mes: mes.mes,
+                    ordemMes: ordem.mes,
+                    lancamentos: [...(mes.lancamentos || [])],
+                });
+            }
+        }
+
+        return Array.from(anosMap.entries())
+            .sort((a, b) => b[0] - a[0])
+            .map(([ano, mesesMap]) => ({
+                ano,
+                meses: Array.from(mesesMap.values()).sort(
+                    (a, b) => b.ordemMes - a.ordemMes,
+                ),
+            }));
+    };
+
     const renderLegendaCategorias = () => {
         const classeFiltro = categoriasAtivas.size
             ? `Filtros ativos: ${escapeHtml(Array.from(categoriasAtivas).join(', '))}`
@@ -294,7 +228,12 @@
                 const urlComprovante = normalizarUrlComprovante(
                     item.urlcomprovante,
                 );
-                const descricaoHtml = escapeHtml(item.descricao);
+                const descricaoExibicao =
+                    privacyUtils.anonimizarDescricaoPorCategoria(
+                        item.descricao,
+                        categoria,
+                    );
+                const descricaoHtml = escapeHtml(descricaoExibicao);
                 const descricaoConteudo = urlComprovante
                     ? `<a class="comprovante-link" href="${escapeHtml(urlComprovante)}" target="_blank" rel="noopener noreferrer">${descricaoHtml}</a>`
                     : descricaoHtml;
@@ -347,18 +286,16 @@
     };
 
     const renderTela = () => {
-        const secoesCargas = ordenarCargasDesc(cargas)
-            .map((carga) => {
-                const mesesFonte = ordenarMesesDesc(carga.porMes || []);
+        const secoesAnos = construirAnos()
+            .map((anoData) => {
                 const mesesRender = categoriasAtivas.size
-                    ? mesesFonte.filter(
+                    ? anoData.meses.filter(
                           (mes) =>
                               filtrarLancamentos(mes.lancamentos || []).length >
                               0,
                       )
-                    : mesesFonte;
+                    : anoData.meses;
 
-                const tabelasMeses = mesesRender.map(renderMes).join('');
                 const totalLancamentos = mesesRender.reduce(
                     (acc, mes) =>
                         acc + filtrarLancamentos(mes.lancamentos || []).length,
@@ -369,13 +306,13 @@
                     return '';
                 }
 
-                const tituloPeriodo = `${carga.periodo?.inicio || '-'} ate ${carga.periodo?.fim || '-'}`;
+                const tabelasMeses = mesesRender.map(renderMes).join('');
 
                 return `
                     <section class="table-panel reveal delay-2">
                         <div class="panel-head">
-                            <h3>${escapeHtml(tituloPeriodo)}</h3>
-                            <p>Arquivo: ${escapeHtml(carga.arquivoCsv || '-')} | Lancamentos: ${totalLancamentos}</p>
+                            <h3>${anoData.ano}</h3>
+                            <p>Meses: ${mesesRender.length} | Lancamentos: ${totalLancamentos}</p>
                         </div>
                         <div class="months-grid">${tabelasMeses}</div>
                     </section>
@@ -383,11 +320,11 @@
             })
             .join('');
 
-        const estadoVazio = secoesCargas
+        const estadoVazio = secoesAnos
             ? ''
             : '<section class="table-panel"><div class="panel-head"><p>Nenhum lancamento encontrado para os filtros selecionados.</p></div></section>';
 
-        alvo.innerHTML = `${renderLegendaCategorias()}${estadoVazio}${secoesCargas}`;
+        alvo.innerHTML = `${renderLegendaCategorias()}${estadoVazio}${secoesAnos}`;
     };
 
     alvo.addEventListener('click', (event) => {
