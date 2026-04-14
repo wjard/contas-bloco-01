@@ -192,17 +192,21 @@
             <section class="hero">
                 <h1>CRUD de Regras de Categoria</h1>
                 <p class="subtitle">
-                    As TAGs são fixas. Você pode adicionar, editar e remover apenas valores de teste.
+                    As TAGs são fixas. Você pode adicionar, editar e remover
+                    apenas valores de teste.
                 </p>
                 <div class="actions">
-                    <button type="button" class="btn-primary" id="btnSalvarJson">
+                    <button type="button" class="btn-primary"
+                        id="btnSalvarJson">
                         Salvar JSON
                     </button>
                     <button type="button" id="btnRestaurarPadrao">
                         Restaurar padrão
                     </button>
-                    <label class="file-label" for="inputImportarJson">Importar JSON</label>
-                    <input id="inputImportarJson" type="file" accept="application/json" hidden />
+                    <label class="file-label" for="inputImportarJson">Importar
+                        JSON</label>
+                    <input id="inputImportarJson" type="file"
+                        accept="application/json" hidden />
                 </div>
                 <p class="status" id="statusMensagem">Carregando regras...</p>
             </section>
@@ -210,7 +214,8 @@
             <section class="panel">
                 <h2>Regras</h2>
                 <p class="muted">
-                    Campo "Qualquer termo" usa OR. Campo "Todos os termos" usa AND (separados por vírgula).
+                    Campo "Qualquer termo" usa OR. Campo "Todos os termos" usa
+                    AND (separados por vírgula).
                 </p>
                 <div id="cardsRegras" class="cards"></div>
             </section>
@@ -367,12 +372,15 @@
                 Array.isArray(base.includesAny) ? base.includesAny : [],
             );
 
-            const includesAll = (Array.isArray(base.includesAll)
-                ? base.includesAll
-                : []
+            const includesAll = (
+                Array.isArray(base.includesAll) ? base.includesAll : []
             )
                 .map((grupo) =>
-                    dedupe(Array.isArray(grupo) ? grupo : String(grupo || '').split(',')),
+                    dedupe(
+                        Array.isArray(grupo)
+                            ? grupo
+                            : String(grupo || '').split(','),
+                    ),
                 )
                 .filter((grupo) => grupo.length > 0);
 
@@ -467,15 +475,22 @@
             const res = await fetch('./categoria-regras.json', {
                 cache: 'no-store',
             });
-            if (!res.ok) throw new Error('Falha ao carregar arquivo JSON padrão.');
+            if (!res.ok)
+                throw new Error('Falha ao carregar arquivo JSON padrão.');
             const payload = await res.json();
             estado = normalizarPayload(payload);
             render();
             setStatus('JSON padrão carregado com sucesso.');
         } catch (_error) {
-            estado = normalizarPayload({ versao: 1, regras: clone(REGRAS_PADRAO) });
+            estado = normalizarPayload({
+                versao: 1,
+                regras: clone(REGRAS_PADRAO),
+            });
             render();
-            setStatus('Usando fallback padrão em memória (não foi possível ler categoria-regras.json).', true);
+            setStatus(
+                'Usando fallback padrão em memória (não foi possível ler categoria-regras.json).',
+                true,
+            );
         }
     };
 
@@ -554,7 +569,10 @@
             baixarJson(conteudo, 'categoria-regras.json');
             setStatus('JSON exportado (download).');
         } catch (error) {
-            setStatus(`Erro ao salvar JSON: ${error?.message || 'desconhecido'}`, true);
+            setStatus(
+                `Erro ao salvar JSON: ${error?.message || 'desconhecido'}`,
+                true,
+            );
         }
     };
 
@@ -601,7 +619,10 @@
             render();
             setStatus('JSON importado com sucesso.');
         } catch (error) {
-            setStatus(`Falha ao importar JSON: ${error?.message || 'desconhecido'}`, true);
+            setStatus(
+                `Falha ao importar JSON: ${error?.message || 'desconhecido'}`,
+                true,
+            );
         } finally {
             inputImportarJson.value = '';
         }

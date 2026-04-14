@@ -2393,12 +2393,28 @@ window.DADOS_FINANCEIROS = {
         },
     ];
 
+    const clonarSemStructuredClone = (valor) => {
+        if (Array.isArray(valor)) {
+            return valor.map((item) => clonarSemStructuredClone(item));
+        }
+
+        if (valor && typeof valor === 'object') {
+            const saida = {};
+            for (const [chave, item] of Object.entries(valor)) {
+                saida[chave] = clonarSemStructuredClone(item);
+            }
+            return saida;
+        }
+
+        return valor;
+    };
+
     const clonar = (valor) => {
         if (typeof structuredClone === 'function') {
             return structuredClone(valor);
         }
 
-        return JSON.parse(JSON.stringify(valor));
+        return clonarSemStructuredClone(valor);
     };
 
     const limparString = (texto) => String(texto || '').trim();
@@ -2428,12 +2444,15 @@ window.DADOS_FINANCEIROS = {
                 Array.isArray(base.includesAny) ? base.includesAny : [],
             );
 
-            const includesAll = (Array.isArray(base.includesAll)
-                ? base.includesAll
-                : []
+            const includesAll = (
+                Array.isArray(base.includesAll) ? base.includesAll : []
             )
                 .map((grupo) =>
-                    dedupe(Array.isArray(grupo) ? grupo : String(grupo || '').split(',')),
+                    dedupe(
+                        Array.isArray(grupo)
+                            ? grupo
+                            : String(grupo || '').split(','),
+                    ),
                 )
                 .filter((grupo) => grupo.length > 0);
 
