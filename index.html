@@ -67,6 +67,7 @@
                 border: 1px solid var(--line);
                 border-radius: 12px;
                 padding: 14px 16px;
+                overflow-wrap: anywhere;
                 transition: transform 120ms ease, border-color 120ms ease,
                     background-color 120ms ease;
             }
@@ -147,6 +148,34 @@
                 }
                 100% {
                     box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
+                }
+            }
+
+            @media (max-width: 640px) {
+                body {
+                    padding: 14px;
+                    place-items: start center;
+                }
+
+                main {
+                    border-radius: 14px;
+                    padding: 16px;
+                }
+
+                p {
+                    font-size: 0.95rem;
+                    line-height: 1.45;
+                }
+
+                a {
+                    padding: 12px;
+                    line-height: 1.35;
+                }
+
+                .status-chip {
+                    width: 100%;
+                    justify-content: center;
+                    text-align: center;
                 }
             }
         </style>

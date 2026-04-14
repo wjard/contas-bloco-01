@@ -325,6 +325,7 @@ td {
     overflow: visible;
     text-overflow: clip;
     word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 td:last-child,
@@ -351,15 +352,23 @@ tbody tr:nth-child(even) {
 .year-matrix-table th,
 .year-matrix-table td {
     vertical-align: top;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
 
 .year-matrix-table thead th {
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.15;
 }
 
 .month-row-title {
     min-width: 130px;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .year-matrix-table td {
@@ -376,6 +385,9 @@ tbody tr:nth-child(even) {
     display: block;
     font-size: 0.85rem;
     line-height: 1.25;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: anywhere;
 }
 
 .cell-sum {
@@ -461,6 +473,7 @@ tbody tr:nth-child(even) {
     text-decoration: underline;
     text-decoration-color: #b88f6a;
     text-underline-offset: 2px;
+    overflow-wrap: anywhere;
 }
 
 .comprovante-link:hover {
@@ -609,6 +622,23 @@ td.positive {
 }
 
 @media (max-width: 980px) {
+    .layout {
+        width: min(96vw, 980px);
+        margin: 26px auto 30px;
+        gap: 14px;
+    }
+
+    .hero,
+    .panel,
+    .table-panel,
+    .cards .card {
+        padding: 14px;
+    }
+
+    .table-panel {
+        padding: 14px;
+    }
+
     .cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -630,12 +660,58 @@ td.positive {
     .month-categories-head {
         width: 100%;
     }
+
+    .page-resumo-anual .layout {
+        width: min(97vw, 980px);
+        margin: 18px auto 24px;
+    }
+
+    .page-resumo-anual .table-panel {
+        padding: 10px;
+    }
+
+    .page-resumo-anual .panel-head h2 {
+        font-size: 0.98rem;
+        line-height: 1.35;
+    }
+
+    .page-resumo-anual .panel-head p,
+    .page-resumo-anual .category-legend p,
+    .page-resumo-anual .month-summary,
+    .page-resumo-anual .cell-value-item,
+    .page-resumo-anual .year-total-cell small {
+        font-size: 0.72rem;
+    }
+
+    .page-resumo-anual .year-matrix-table {
+        min-width: 840px;
+    }
+
+    .page-resumo-anual .year-matrix-table td,
+    .page-resumo-anual .year-total-cell {
+        min-width: 112px;
+    }
 }
 
 @media (max-width: 560px) {
     .layout {
         width: min(96vw, 560px);
         margin-top: 20px;
+    }
+
+    h1 {
+        font-size: clamp(1.35rem, 6.6vw, 1.8rem);
+    }
+
+    h2 {
+        font-size: 1.15rem;
+    }
+
+    .subtitle,
+    .panel-head p,
+    .month-summary {
+        font-size: 0.86rem;
+        line-height: 1.45;
     }
 
     .hero,
@@ -645,11 +721,124 @@ td.positive {
         border-radius: 14px;
     }
 
+    .month-section {
+        padding: 10px;
+    }
+
+    table {
+        min-width: 560px;
+    }
+
+    th,
+    td {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+
+    .year-matrix-table {
+        min-width: 900px;
+    }
+
+    .year-matrix-table td,
+    .year-total-cell {
+        min-width: 130px;
+    }
+
     .cards {
         grid-template-columns: 1fr;
     }
 
     .page-switcher select {
         min-width: 100%;
+    }
+
+    .page-switcher {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .category-legend-tags,
+    .month-categories-list,
+    .month-categories-head {
+        gap: 6px;
+    }
+
+    .tag {
+        white-space: normal;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .page-resumo-anual .layout {
+        width: 98vw;
+        margin: 10px auto 18px;
+        gap: 10px;
+    }
+
+    .page-resumo-anual .table-panel {
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .page-resumo-anual h1 {
+        font-size: clamp(1.02rem, 5.2vw, 1.28rem);
+    }
+
+    .page-resumo-anual h2 {
+        font-size: 0.9rem;
+    }
+
+    .page-resumo-anual .panel-head p,
+    .page-resumo-anual .category-legend p,
+    .page-resumo-anual .month-summary,
+    .page-resumo-anual .cell-value-item,
+    .page-resumo-anual .year-total-cell small {
+        font-size: 0.68rem;
+        line-height: 1.35;
+    }
+
+    .page-resumo-anual .tag {
+        font-size: 0.58rem;
+        padding: 3px 6px;
+    }
+
+    .page-resumo-anual th,
+    .page-resumo-anual td {
+        font-size: 0.66rem;
+        padding: 4px;
+    }
+
+    .page-resumo-anual .year-matrix-table {
+        min-width: 720px;
+    }
+
+    .page-resumo-anual .month-row-title {
+        min-width: 84px;
+    }
+
+    .page-resumo-anual .year-matrix-table td,
+    .page-resumo-anual .year-total-cell {
+        min-width: 92px;
+    }
+}
+
+@media (max-width: 430px) {
+    .page-resumo-anual .year-matrix-table {
+        min-width: 620px;
+    }
+
+    .page-resumo-anual .month-row-title {
+        min-width: 76px;
+    }
+
+    .page-resumo-anual .year-matrix-table td,
+    .page-resumo-anual .year-total-cell {
+        min-width: 80px;
+    }
+
+    .page-resumo-anual th,
+    .page-resumo-anual td {
+        font-size: 0.62rem;
+        padding: 3px;
     }
 }
