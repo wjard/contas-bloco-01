@@ -6018,90 +6018,214 @@ window.EXTRATO_TODAS_CARGAS;
             .replaceAll(/[\u0300-\u036f]/g, '')
             .toLowerCase();
 
-    const temTodos = (texto, termos) =>
-        termos.every((termo) => texto.includes(termo));
+    const TAGS_FIXAS = [
+        'Boleto Condo. Bloco',
+        'Gratificação Subsind',
+        'Gratificação Limpeza',
+        'Conta Consumo',
+        'Rateio Agua',
+        'Repasse Condo. Geral',
+        'Seguro/Manut.',
+        'Devolução',
+        'Material Limpeza',
+        'Terceiros',
+    ];
 
-    const REGRAS_CATEGORIA = [
+    const REGRAS_CATEGORIA_PADRAO = [
         {
             tag: 'Boleto Condo. Bloco',
-            test: (d) =>
-                d.includes('boleto de cobranca recebido') ||
-                d.includes('pix recebido: "') ||
-                temTodos(d, ['pix recebido', 'cp']),
+            includesAny: ['boleto de cobranca recebido', 'pix recebido: "'],
+            includesAll: [['pix recebido', 'cp']],
         },
         {
             tag: 'Gratificação Subsind',
-            test: (d) =>
-                temTodos(d, ['pix enviado', 'glayce kelly']) ||
-                temTodos(d, ['pix enviado', 'mariana']),
+            includesAny: [],
+            includesAll: [
+                ['pix enviado', 'glayce kelly'],
+                ['pix enviado', 'mariana'],
+            ],
         },
         {
             tag: 'Gratificação Limpeza',
-            test: (d) => temTodos(d, ['pix enviado', 'maria edina ferreira']),
+            includesAny: [],
+            includesAll: [['pix enviado', 'maria edina ferreira']],
         },
         {
             tag: 'Conta Consumo',
-            test: (d) =>
-                d.includes('pagamento copasa') ||
-                d.includes('companhia de saneamento') ||
-                d.includes('pagamento cemig') ||
-                d.includes('pix enviado cemig') ||
-                d.includes('pix enviado copasa') ||
-                d.includes('cemig distribuicao') ||
-                d.includes('copasa minas gerais') ||
-                d.includes('copasa mg'),
+            includesAny: [
+                'pagamento copasa',
+                'companhia de saneamento',
+                'pagamento cemig',
+                'pix enviado cemig',
+                'pix enviado copasa',
+                'cemig distribuicao',
+                'copasa minas gerais',
+                'copasa mg',
+            ],
+            includesAll: [],
         },
         {
             tag: 'Rateio Agua',
-            test: (d) =>
-                temTodos(d, ['pix enviado', '60701190-seu consumo']) ||
-                d.includes('seu consumo') ||
-                d.includes('seu cosumo') ||
-                temTodos(d, ['leitura', 'hidrometro']),
+            includesAny: ['seu consumo', 'seu cosumo'],
+            includesAll: [
+                ['pix enviado', '60701190-seu consumo'],
+                ['leitura', 'hidrometro'],
+            ],
         },
         {
             tag: 'Repasse Condo. Geral',
-            test: (d) =>
-                temTodos(d, [
-                    'pagamento de titulo',
-                    'residencial village da fonte',
-                ]) ||
-                temTodos(d, ['pix enviado', 'residencial village da fonte']) ||
-                temTodos(d, ['pix', 'sandro']) ||
-                d.includes('sandro souza'),
+            includesAny: ['sandro souza'],
+            includesAll: [
+                ['pagamento de titulo', 'residencial village da fonte'],
+                ['pix enviado', 'residencial village da fonte'],
+                ['pix', 'sandro'],
+            ],
         },
         {
             tag: 'Seguro/Manut.',
-            test: (d) =>
-                d.includes('tokio marine seguradora') ||
-                d.includes('seguradora') ||
-                d.includes('seguradoras') ||
-                d.includes('desinsetizadora') ||
-                d.includes('desentupidora') ||
-                temTodos(d, ['pix enviado', 'incendio']) ||
-                d.includes('nitro'),
+            includesAny: [
+                'tokio marine seguradora',
+                'seguradora',
+                'seguradoras',
+                'desinsetizadora',
+                'desentupidora',
+                'nitro',
+            ],
+            includesAll: [['pix enviado', 'incendio']],
         },
         {
             tag: 'Devolução',
-            test: (d) => temTodos(d, ['pix enviado', 'gleidstone']),
+            includesAny: [],
+            includesAll: [['pix enviado', 'gleidstone']],
         },
         {
             tag: 'Material Limpeza',
-            test: (d) =>
-                temTodos(d, ['pix enviado', 'supermercados bh']) ||
-                temTodos(d, ['pix enviado', 'comercio de alimentos']),
+            includesAny: [],
+            includesAll: [
+                ['pix enviado', 'supermercados bh'],
+                ['pix enviado', 'comercio de alimentos'],
+            ],
         },
         {
             tag: 'Terceiros',
-            test: (d) =>
-                d.includes('pagamento efetuado') ||
-                temTodos(d, ['pix enviado', 'cp']),
+            includesAny: ['pagamento efetuado'],
+            includesAll: [['pix enviado', 'cp']],
         },
     ];
 
+    const clonar = (valor) => {
+        if (typeof structuredClone === 'function') {
+            return structuredClone(valor);
+        }
+
+        return JSON.parse(JSON.stringify(valor));
+    };
+
+    const limparString = (texto) => String(texto || '').trim();
+
+    const dedupe = (lista) => {
+        const vistos = new Set();
+        const saida = [];
+
+        for (const item of lista) {
+            const valor = limparString(item);
+            if (!valor) continue;
+            const chave = valor.toLowerCase();
+            if (vistos.has(chave)) continue;
+            vistos.add(chave);
+            saida.push(valor);
+        }
+
+        return saida;
+    };
+
+    const normalizarRegras = (entrada) => {
+        const porTag = new Map((entrada || []).map((item) => [item.tag, item]));
+
+        return TAGS_FIXAS.map((tag) => {
+            const base = porTag.get(tag) || {};
+            const includesAny = dedupe(
+                Array.isArray(base.includesAny) ? base.includesAny : [],
+            );
+
+            const includesAll = (Array.isArray(base.includesAll)
+                ? base.includesAll
+                : []
+            )
+                .map((grupo) =>
+                    dedupe(Array.isArray(grupo) ? grupo : String(grupo || '').split(',')),
+                )
+                .filter((grupo) => grupo.length > 0);
+
+            return {
+                tag,
+                includesAny,
+                includesAll,
+            };
+        });
+    };
+
+    const prepararRegrasComparacao = (regras) =>
+        (regras || []).map((regra) => ({
+            tag: regra.tag,
+            includesAny: (regra.includesAny || []).map(normalizar),
+            includesAll: (regra.includesAll || []).map((grupo) =>
+                (grupo || []).map(normalizar),
+            ),
+        }));
+
+    let regrasAtivas = normalizarRegras(REGRAS_CATEGORIA_PADRAO);
+    let regrasComparacao = prepararRegrasComparacao(regrasAtivas);
+
+    const setRegrasCategoria = (novasRegras) => {
+        regrasAtivas = normalizarRegras(novasRegras);
+        regrasComparacao = prepararRegrasComparacao(regrasAtivas);
+    };
+
+    const getRegrasCategoria = () => clonar(regrasAtivas);
+
+    const carregarRegrasDoJson = async () => {
+        if (typeof fetch !== 'function') return;
+
+        try {
+            const resposta = await fetch('./categoria-regras.json', {
+                cache: 'no-store',
+            });
+            if (!resposta.ok) return;
+            const payload = await resposta.json();
+
+            let regras = null;
+            if (Array.isArray(payload)) {
+                regras = payload;
+            } else if (Array.isArray(payload?.regras)) {
+                regras = payload.regras;
+            }
+
+            if (regras) {
+                setRegrasCategoria(regras);
+            }
+        } catch (error) {
+            // Fallback padrao em memoria.
+            console.warn('Falha ao carregar categoria-regras.json:', error);
+        }
+    };
+
+    const bateAlgumTermo = (desc, termos) =>
+        (termos || []).some((termo) => desc.includes(termo));
+
+    const bateTodosTermosDoGrupo = (desc, grupo) =>
+        (grupo || []).every((termo) => desc.includes(termo));
+
+    const bateAlgumGrupo = (desc, grupos) =>
+        (grupos || []).some((grupo) => bateTodosTermosDoGrupo(desc, grupo));
+
     const classificarCategoria = (descricao) => {
         const desc = normalizar(descricao);
-        const regra = REGRAS_CATEGORIA.find((item) => item.test(desc));
+        const regra = regrasComparacao.find((item) => {
+            const bateAny = bateAlgumTermo(desc, item.includesAny);
+            if (bateAny) return true;
+            return bateAlgumGrupo(desc, item.includesAll);
+        });
         return regra ? regra.tag : 'Outros';
     };
 
@@ -6123,9 +6247,15 @@ window.EXTRATO_TODAS_CARGAS;
     const privacyUtils = {
         classificarCategoria,
         anonimizarDescricaoPorCategoria,
+        getRegrasCategoria,
+        setRegrasCategoria,
+        getRegrasCategoriaPadrao: () => clonar(REGRAS_CATEGORIA_PADRAO),
     };
 
     globalThis.EXTRATO_PRIVACY_UTILS = privacyUtils;
+    globalThis.INTER_PRIVACY_UTILS = privacyUtils;
+
+    carregarRegrasDoJson();
 })();
 
 </script>
@@ -6161,7 +6291,6 @@ window.EXTRATO_TODAS_CARGAS;
     const categoriasAtivas = new Set();
     let mostrarTabelaMobile = false;
     let mostrarTodasTagsMobileTabela = false;
-
 
     const getCategoriaLancamento = (item) =>
         limitarTag(privacyUtils.classificarCategoria(item.descricao));

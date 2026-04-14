@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>CRUD de Regras de Categoria</title>
+        <style>
+            :root {
+                --bg: #f8f5ef;
+                --card: #fffaf4;
+                --line: #ddcfbf;
+                --ink: #3b2a1d;
+                --ink-soft: #6a5647;
+                --accent: #0f766e;
+                --accent-2: #14532d;
+                --danger: #9f1239;
+                --shadow: 0 12px 28px rgba(58, 34, 22, 0.12);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: 'Manrope', sans-serif;
+                color: var(--ink);
+                background: radial-gradient(circle at 5% 10%, #efe4d8 0 20%, transparent 21%),
+                    linear-gradient(145deg, #f7efe4, var(--bg));
+            }
+
+            .wrap {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 18px;
+                display: grid;
+                gap: 14px;
+            }
+
+            .hero,
+            .panel,
+            .card {
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                box-shadow: var(--shadow);
+            }
+
+            .hero,
+            .panel {
+                padding: 16px;
+            }
+
+            h1,
+            h2,
+            h3 {
+                margin: 0;
+                font-family: 'Fraunces', serif;
+            }
+
+            .subtitle {
+                margin: 8px 0 0;
+                color: var(--ink-soft);
+            }
+
+            .actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 12px;
+            }
+
+            button,
+            .file-label {
+                appearance: none;
+                border: 1px solid #cfb9a2;
+                border-radius: 10px;
+                padding: 10px 12px;
+                background: #fff;
+                color: var(--ink);
+                font-weight: 700;
+                cursor: pointer;
+            }
+
+            button:hover,
+            .file-label:hover {
+                border-color: var(--accent);
+                background: #f3fffd;
+            }
+
+            .btn-primary {
+                background: linear-gradient(135deg, var(--accent), var(--accent-2));
+                color: #fff;
+                border-color: transparent;
+            }
+
+            .btn-danger {
+                color: var(--danger);
+                border-color: #f1c7d5;
+                background: #fff7fa;
+            }
+
+            input,
+            textarea {
+                width: 100%;
+                border: 1px solid #d7c1ab;
+                border-radius: 10px;
+                padding: 9px 10px;
+                font: inherit;
+                color: var(--ink);
+                background: #fff;
+            }
+
+            .cards {
+                display: grid;
+                gap: 12px;
+                grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            }
+
+            .card {
+                padding: 14px;
+                display: grid;
+                gap: 10px;
+            }
+
+            .badge {
+                display: inline-block;
+                font-size: 0.76rem;
+                font-weight: 800;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                padding: 5px 8px;
+                border-radius: 999px;
+                color: #0f172a;
+                background: #e2e8f0;
+                border: 1px solid #cbd5e1;
+            }
+
+            .section-title {
+                font-size: 0.9rem;
+                color: var(--ink-soft);
+                margin-bottom: 6px;
+            }
+
+            .stack {
+                display: grid;
+                gap: 8px;
+            }
+
+            .row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 8px;
+            }
+
+            .help {
+                color: var(--ink-soft);
+                font-size: 0.84rem;
+                margin: 0;
+            }
+
+            .status {
+                margin-top: 8px;
+                font-weight: 700;
+                color: var(--ink-soft);
+            }
+
+            .muted {
+                color: var(--ink-soft);
+                font-size: 0.88rem;
+            }
+
+            @media (max-width: 680px) {
+                .wrap {
+                    padding: 12px;
+                }
+
+                .hero,
+                .panel,
+                .card {
+                    border-radius: 12px;
+                }
+
+                .row {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="wrap">
+            <section class="hero">
+                <h1>CRUD de Regras de Categoria</h1>
+                <p class="subtitle">
+                    As TAGs são fixas. Você pode adicionar, editar e remover
+                    apenas valores de teste.
+                </p>
+                <div class="actions">
+                    <button type="button" class="btn-primary"
+                        id="btnSalvarJson">
+                        Salvar JSON
+                    </button>
+                    <button type="button" id="btnRestaurarPadrao">
+                        Restaurar padrão
+                    </button>
+                    <label class="file-label" for="inputImportarJson">Importar
+                        JSON</label>
+                    <input id="inputImportarJson" type="file"
+                        accept="application/json" hidden />
+                </div>
+                <p class="status" id="statusMensagem">Carregando regras...</p>
+            </section>
+
+            <section class="panel">
+                <h2>Regras</h2>
+                <p class="muted">
+                    Campo "Qualquer termo" usa OR. Campo "Todos os termos" usa
+                    AND (separados por vírgula).
+                </p>
+                <div id="cardsRegras" class="cards"></div>
+            </section>
+        </main>
+
+        <script src="categoria-regras-crud.js"></script>
+    </body>
+</html>

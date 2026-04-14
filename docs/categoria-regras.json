@@ -1,0 +1,146 @@
+{
+  "versao": 1,
+  "regras": [
+    {
+      "tag": "Boleto Condo. Bloco",
+      "includesAny": [
+        "boleto de cobranca recebido",
+        "pix recebido: \""
+      ],
+      "includesAll": [
+        [
+          "pix recebido",
+          "cp"
+        ]
+      ]
+    },
+    {
+      "tag": "Gratificação Subsind",
+      "includesAny": [],
+      "includesAll": [
+        [
+          "pix enviado",
+          "glayce kelly"
+        ],
+        [
+          "pix enviado",
+          "mariana"
+        ]
+      ]
+    },
+    {
+      "tag": "Gratificação Limpeza",
+      "includesAny": [],
+      "includesAll": [
+        [
+          "pix enviado",
+          "maria edina ferreira"
+        ]
+      ]
+    },
+    {
+      "tag": "Conta Consumo",
+      "includesAny": [
+        "pagamento copasa",
+        "companhia de saneamento",
+        "pagamento cemig",
+        "pix enviado cemig",
+        "pix enviado copasa",
+        "cemig distribuicao",
+        "copasa minas gerais",
+        "copasa mg"
+      ],
+      "includesAll": []
+    },
+    {
+      "tag": "Rateio Agua",
+      "includesAny": [
+        "seu consumo",
+        "seu cosumo"
+      ],
+      "includesAll": [
+        [
+          "pix enviado",
+          "60701190-seu consumo"
+        ],
+        [
+          "leitura",
+          "hidrometro"
+        ]
+      ]
+    },
+    {
+      "tag": "Repasse Condo. Geral",
+      "includesAny": [
+        "sandro souza"
+      ],
+      "includesAll": [
+        [
+          "pagamento de titulo",
+          "residencial village da fonte"
+        ],
+        [
+          "pix enviado",
+          "residencial village da fonte"
+        ],
+        [
+          "pix",
+          "sandro"
+        ]
+      ]
+    },
+    {
+      "tag": "Seguro/Manut.",
+      "includesAny": [
+        "tokio marine seguradora",
+        "seguradora",
+        "seguradoras",
+        "desinsetizadora",
+        "desentupidora",
+        "nitro"
+      ],
+      "includesAll": [
+        [
+          "pix enviado",
+          "incendio"
+        ]
+      ]
+    },
+    {
+      "tag": "Devolução",
+      "includesAny": [],
+      "includesAll": [
+        [
+          "pix enviado",
+          "gleidstone"
+        ]
+      ]
+    },
+    {
+      "tag": "Material Limpeza",
+      "includesAny": [],
+      "includesAll": [
+        [
+          "pix enviado",
+          "supermercados bh"
+        ],
+        [
+          "pix enviado",
+          "comercio de alimentos"
+        ]
+      ]
+    },
+    {
+      "tag": "Terceiros",
+      "includesAny": [
+        "pagamento efetuado"
+      ],
+      "includesAll": [
+        [
+          "pix enviado",
+          "cp"
+        ]
+      ]
+    }
+  ]
+}

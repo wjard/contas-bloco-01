@@ -3,6 +3,7 @@ const path = require('node:path');
 
 const rootDir = path.resolve(__dirname, '..');
 const outDir = path.join(rootDir, 'docs');
+const rulesJsonFile = 'categoria-regras.json';
 
 const isExternalUrl = (value) => /^(https?:)?\/\//i.test(value || '');
 
@@ -101,6 +102,11 @@ const build = () => {
         const result = buildHtml(sourcePath);
         const targetPath = path.join(outDir, name);
         fs.writeFileSync(targetPath, result);
+    }
+
+    const rulesJsonPath = path.join(rootDir, rulesJsonFile);
+    if (fs.existsSync(rulesJsonPath)) {
+        fs.copyFileSync(rulesJsonPath, path.join(outDir, rulesJsonFile));
     }
 
     fs.writeFileSync(path.join(outDir, '.nojekyll'), '\n');
