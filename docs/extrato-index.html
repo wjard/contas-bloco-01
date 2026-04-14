@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cargas</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap"
-      rel="stylesheet" />
-    <style>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Cargas</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap"
+            rel="stylesheet" />
+        <style>
 :root {
     --bg: #f7f1e8;
     --bg-2: #f0dfce;
@@ -1222,24 +1222,26 @@ td.positive {
 }
 
 </style>
-  </head>
-  <body>
-    <div class="noise"></div>
-    <main class="layout">
-      <header class="hero reveal">
-        <p class="eyebrow">Extrato Bancário</p>
-        <h1>Extratos Consolidados em Uma Página</h1>
-        <p class="subtitle">Todos os CSVs do Extrato Bancário exibidos na mesma
-          página, separados por período.</p>
-      </header>
-      <section class="table-panel reveal delay-1" id="cargasInterContainer">
-        <div class="panel-head">
-          <h2>Lançamentos por Mês/Ano</h2>
-        </div>
-        <div id="tabelasTodasCargas" class="months-grid"></div>
-      </section>
-    </main>
-    <script>
+    </head>
+    <body>
+        <div class="noise"></div>
+        <main class="layout">
+            <header class="hero reveal">
+                <p class="eyebrow">Extrato Bancário</p>
+                <h1>Extratos Consolidados em Uma Página</h1>
+                <p class="subtitle">Todos os CSVs do Extrato Bancário exibidos
+                    na mesma
+                    página, separados por período.</p>
+            </header>
+            <section class="table-panel reveal delay-1"
+                id="cargasInterContainer">
+                <div class="panel-head">
+                    <h2>Lançamentos por Mês/Ano</h2>
+                </div>
+                <div id="tabelasTodasCargas" class="months-grid"></div>
+            </section>
+        </main>
+        <script>
 window.INTER_TODAS_CARGAS = [
     {
         "arquivoCsv": "Extrato-01-04-2026-a-14-04-2026-CSV.csv",
@@ -5247,7 +5249,7 @@ window.INTER_TODAS_CARGAS = [
 ];
 
 </script>
-    <script>
+        <script>
 (function () {
     const cargas = globalThis.INTER_TODAS_CARGAS || [];
     const alvo = document.getElementById('tabelasTodasCargas');
@@ -5858,7 +5860,5 @@ window.INTER_TODAS_CARGAS = [
 })();
 
 </script>
-  </body>
+    </body>
 </html>
-
-
