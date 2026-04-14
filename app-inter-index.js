@@ -136,7 +136,13 @@
         { nome: 'Terceiros', classe: 'cat-terceiros' },
     ];
 
+    const CLASSE_CATEGORIA = new Map(
+        LEGENDA_CATEGORIAS.map((item) => [item.nome, item.classe]),
+    );
+
     const categoriasAtivas = new Set();
+    let mostrarTabelaMobile = false;
+    let mostrarTodasTagsMobileTabela = false;
 
     const classificarCategoria = (descricao) => {
         const desc = normalizar(descricao);
@@ -199,6 +205,9 @@
         if (!categoriasAtivas.size) return todas;
         return todas.filter((cat) => categoriasAtivas.has(cat));
     };
+
+    const classeTagCategoria = (categoria) =>
+        CLASSE_CATEGORIA.get(categoria) || 'cat-outros';
 
     const valoresDaCategoria = (lancamentos, categoria) =>
         (lancamentos || []).filter(
@@ -270,16 +279,124 @@
             0,
         );
 
-        const cabecalhoTags = tags
-            .map((tag) => `<th>${escapeHtml(tag)}</th>`)
+        const totalPorTagAno = new Map(
+            tags.map((tag) => [
+                tag,
+                anoData.meses.reduce(
+                    (acc, mes) =>
+                        acc +
+                        somaValores(valoresDaCategoria(mes.lancamentos, tag)),
+                    0,
+                ),
+            ]),
+        );
+
+        const tagsEssenciaisCalculadas = new Set(
+            tags
+                .slice()
+                .sort((a, b) => {
+                    const dif =
+                        Math.abs(totalPorTagAno.get(b) || 0) -
+                        Math.abs(totalPorTagAno.get(a) || 0);
+                    if (dif !== 0) return dif;
+                    return a.localeCompare(b, 'pt-BR');
+                })
+                .slice(0, 4),
+        );
+
+        const tagsComMeta = tags.map((tag) => ({
+            nome: tag,
+            opcional: !tagsEssenciaisCalculadas.has(tag),
+        }));
+
+        const renderCardsMes = (mes) => {
+            const totaisCategorias = tags
+                .map((tag) => {
+                    const total = somaValores(
+                        valoresDaCategoria(mes.lancamentos, tag),
+                    );
+                    return { tag, total };
+                })
+                .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
+
+            const categoriasComMovimento = totaisCategorias.filter(
+                (item) => Math.abs(item.total) > 0.009,
+            );
+
+            const categoriasSemMovimento = totaisCategorias.filter(
+                (item) => Math.abs(item.total) <= 0.009,
+            );
+
+            const totalMes = somaValores(mes.lancamentos);
+            const totalMesClass = totalMes >= 0 ? 'positive' : 'negative';
+
+            const linhasPrincipais = categoriasComMovimento.length
+                ? categoriasComMovimento
+                      .map((item) => {
+                          const classeValor =
+                              item.total >= 0 ? 'positive' : 'negative';
+                          const classeCat = classeTagCategoria(item.tag);
+                          return `
+                            <li class="month-card-item">
+                                <span class="tag tag-category ${classeCat}">${escapeHtml(item.tag)}</span>
+                                <strong class="${classeValor}">${moeda.format(item.total)}</strong>
+                            </li>
+                        `;
+                      })
+                      .join('')
+                : '<li class="month-card-item"><span class="cell-empty">Sem movimentacao nas categorias selecionadas.</span></li>';
+
+            const linhasSemMovimento = categoriasSemMovimento.length
+                ? categoriasSemMovimento
+                      .map((item) => {
+                          const classeCat = classeTagCategoria(item.tag);
+                          return `
+                            <li class="month-card-item month-card-item-muted">
+                                <span class="tag tag-category ${classeCat}">${escapeHtml(item.tag)}</span>
+                                <span class="cell-empty">-</span>
+                            </li>
+                        `;
+                      })
+                      .join('')
+                : '';
+
+            const blocoSemMovimento = linhasSemMovimento
+                ? `
+                    <details class="month-card-details">
+                        <summary>Mostrar categorias sem movimento (${categoriasSemMovimento.length})</summary>
+                        <ul class="month-card-list month-card-list-muted">${linhasSemMovimento}</ul>
+                    </details>
+                `
+                : '';
+
+            return `
+                <article class="month-card-mobile">
+                    <header class="month-card-head">
+                        <h4>${escapeHtml(mes.mesNome)}</h4>
+                        <div class="month-card-meta">
+                            <small>${mes.lancamentos.length} lanc.</small>
+                            <strong class="${totalMesClass}">${moeda.format(totalMes)}</strong>
+                        </div>
+                    </header>
+                    <ul class="month-card-list">${linhasPrincipais}</ul>
+                    ${blocoSemMovimento}
+                </article>
+            `;
+        };
+
+        const cabecalhoTags = tagsComMeta
+            .map(
+                (tag) =>
+                    `<th class="${tag.opcional ? 'optional-col' : ''}">${escapeHtml(tag.nome)}</th>`,
+            )
             .join('');
 
         const linhasMeses = anoData.meses
             .map((mes) => {
-                const celulas = tags
+                const celulas = tagsComMeta
                     .map(
                         (tag) =>
-                            `<td>${renderCelulaCategoria(mes.lancamentos, tag)}</td>`,
+                            `<td class="${tag.opcional ? 'optional-col' : ''}">${renderCelulaCategoria(mes.lancamentos, tag.nome)}</td>`,
                     )
                     .join('');
 
@@ -292,32 +409,38 @@
             })
             .join('');
 
-        const linhaTotal = tags
+        const linhaTotal = tagsComMeta
             .map((tag) => {
                 const totalTag = anoData.meses.reduce(
                     (acc, mes) =>
                         acc +
-                        somaValores(valoresDaCategoria(mes.lancamentos, tag)),
+                        somaValores(
+                            valoresDaCategoria(mes.lancamentos, tag.nome),
+                        ),
                     0,
                 );
                 const totalItens = anoData.meses.reduce(
                     (acc, mes) =>
-                        acc + valoresDaCategoria(mes.lancamentos, tag).length,
+                        acc +
+                        valoresDaCategoria(mes.lancamentos, tag.nome).length,
                     0,
                 );
                 const classe = totalTag >= 0 ? 'positive' : 'negative';
 
-                return `<td class="year-total-cell"><strong class="${classe}">${moeda.format(totalTag)}</strong><small>${totalItens} lanc.</small></td>`;
+                return `<td class="year-total-cell ${tag.opcional ? 'optional-col' : ''}"><strong class="${classe}">${moeda.format(totalTag)}</strong><small>${totalItens} lanc.</small></td>`;
             })
             .join('');
 
+        const cardsMeses = anoData.meses.map(renderCardsMes).join('');
+
         return `
-            <section class="table-panel reveal delay-2">
+            <section class="table-panel reveal delay-2 year-section ${mostrarTabelaMobile ? 'mobile-show-table' : ''} ${mostrarTabelaMobile && !mostrarTodasTagsMobileTabela ? 'table-mobile-compact' : ''}">
                 <div class="panel-head">
                     <h3>${anoData.ano}</h3>
                     <p>Meses: ${anoData.meses.length} | Lancamentos: ${totalLancamentosAno}</p>
                 </div>
-                <div class="table-wrap">
+                <div class="annual-mobile-view">${cardsMeses}</div>
+                <div class="table-wrap annual-table-view">
                     <table class="year-matrix-table">
                         <thead>
                             <tr>
@@ -346,10 +469,45 @@
             ? ''
             : '<section class="table-panel"><div class="panel-head"><p>Nenhum lancamento encontrado para os filtros selecionados.</p></div></section>';
 
-        alvo.innerHTML = `${renderLegendaCategorias()}${estadoVazio}${secoesAnos}`;
+        const textoBotaoMobile = mostrarTabelaMobile
+            ? 'Ver resumo mobile'
+            : 'Mostrar tabela completa';
+
+        const textoBotaoTagsMobile = mostrarTodasTagsMobileTabela
+            ? 'Mostrar menos TAGs'
+            : 'Ver mais TAGs na tabela';
+
+        const controleTagsMobile = mostrarTabelaMobile
+            ? `<button type="button" class="mobile-view-toggle mobile-view-toggle-secondary" data-mobile-tags-toggle="toggle">${textoBotaoTagsMobile}</button>`
+            : '';
+
+        const controleMobile = `
+            <div class="mobile-view-controls">
+                <button type="button" class="mobile-view-toggle" data-mobile-table-toggle="toggle">${textoBotaoMobile}</button>
+                ${controleTagsMobile}
+            </div>
+        `;
+
+        alvo.innerHTML = `${renderLegendaCategorias()}${controleMobile}${estadoVazio}${secoesAnos}`;
     };
 
     alvo.addEventListener('click', (event) => {
+        const botaoMobile = event.target.closest('[data-mobile-table-toggle]');
+        if (botaoMobile && alvo.contains(botaoMobile)) {
+            mostrarTabelaMobile = !mostrarTabelaMobile;
+            renderTela();
+            return;
+        }
+
+        const botaoTagsMobile = event.target.closest(
+            '[data-mobile-tags-toggle]',
+        );
+        if (botaoTagsMobile && alvo.contains(botaoTagsMobile)) {
+            mostrarTodasTagsMobileTabela = !mostrarTodasTagsMobileTabela;
+            renderTela();
+            return;
+        }
+
         const botao = event.target.closest('[data-filter-category]');
         if (!botao || !alvo.contains(botao)) return;
 

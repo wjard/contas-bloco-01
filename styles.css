@@ -461,6 +461,201 @@ tbody tr:nth-child(even) {
     font-weight: 700;
 }
 
+.mobile-view-controls {
+    display: none;
+    margin: 10px 0 4px;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mobile-view-toggle {
+    border: 1px solid #cfae8f;
+    background: #f7eadc;
+    color: #4a3225;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.mobile-view-toggle:hover {
+    background: #f2dfca;
+}
+
+.mobile-view-toggle-secondary {
+    background: #fff7ed;
+    border-color: #dfc1a1;
+}
+
+.annual-mobile-view {
+    display: none;
+}
+
+.month-card-mobile {
+    border: 1px solid #e1cdb8;
+    border-radius: 12px;
+    padding: 10px;
+    background: #fffdf9;
+}
+
+.month-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.month-card-head h4 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem;
+}
+
+.month-card-meta {
+    text-align: right;
+    display: grid;
+    gap: 2px;
+}
+
+.month-card-meta small {
+    color: var(--ink-soft);
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.month-card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.month-card-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.month-card-item strong {
+    font-size: 0.85rem;
+}
+
+.month-card-item-muted {
+    opacity: 0.86;
+}
+
+.month-card-details {
+    margin-top: 8px;
+    border-top: 1px dashed #dac3ad;
+    padding-top: 8px;
+}
+
+.month-card-details summary {
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.month-card-list-muted {
+    margin-top: 8px;
+}
+
+.resumo-mes-layout {
+    display: grid;
+    gap: 10px;
+}
+
+.resumo-rapido-panel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.resumo-rapido-item {
+    border: 1px solid #e0cab4;
+    border-radius: 12px;
+    background: #fffaf4;
+    padding: 10px;
+    display: grid;
+    gap: 3px;
+}
+
+.resumo-rapido-item small {
+    color: var(--ink-soft);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 800;
+}
+
+.resumo-rapido-item strong {
+    font-size: 0.9rem;
+}
+
+.resumo-rapido-item span {
+    color: var(--ink-soft);
+    font-size: 0.73rem;
+    line-height: 1.25;
+}
+
+.resumo-mes-mobile-list {
+    display: none;
+}
+
+.resumo-mes-card-mobile {
+    border: 1px solid #e1cdb8;
+    border-radius: 12px;
+    background: #fffdf9;
+    padding: 10px;
+    box-shadow: 0 3px 12px #5f3b2312;
+}
+
+.resumo-mes-total-card {
+    background: #fbf1e7;
+}
+
+.resumo-mes-card-head {
+    margin: 0 0 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.resumo-mes-card-head h3 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+}
+
+.resumo-mes-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.resumo-mes-card-grid small {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+}
+
+.resumo-mes-card-grid strong {
+    font-size: 0.82rem;
+}
+
 .year-matrix-table tfoot th,
 .year-matrix-table tfoot td {
     background: #f3e1ce;
@@ -691,6 +886,61 @@ td.positive {
     .page-resumo-anual .year-total-cell {
         min-width: 112px;
     }
+
+    .page-resumo-anual .mobile-view-controls {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .page-resumo-anual .annual-mobile-view {
+        display: grid;
+        gap: 8px;
+    }
+
+    .page-resumo-anual .annual-table-view {
+        display: none;
+    }
+
+    .page-resumo-anual .year-section.mobile-show-table .annual-mobile-view {
+        display: none;
+    }
+
+    .page-resumo-anual .year-section.mobile-show-table .annual-table-view {
+        display: block;
+    }
+
+    .page-resumo-anual
+        .year-section.table-mobile-compact
+        .annual-table-view
+        .optional-col {
+        display: none;
+    }
+
+    .page-resumo-mes-saldo .mobile-view-controls {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .page-resumo-mes-saldo .resumo-mes-mobile-list {
+        display: grid;
+        gap: 8px;
+    }
+
+    .page-resumo-mes-saldo .resumo-mes-table-wrap {
+        display: none;
+    }
+
+    .page-resumo-mes-saldo
+        .resumo-mes-layout.show-table-mobile
+        .resumo-mes-mobile-list {
+        display: none;
+    }
+
+    .page-resumo-mes-saldo
+        .resumo-mes-layout.show-table-mobile
+        .resumo-mes-table-wrap {
+        display: block;
+    }
 }
 
 @media (max-width: 560px) {
@@ -819,6 +1069,98 @@ td.positive {
     .page-resumo-anual .year-matrix-table td,
     .page-resumo-anual .year-total-cell {
         min-width: 92px;
+    }
+
+    .page-resumo-anual .mobile-view-controls {
+        justify-content: stretch;
+    }
+
+    .page-resumo-anual .mobile-view-toggle {
+        width: 100%;
+        font-size: 0.66rem;
+        padding: 7px 10px;
+    }
+
+    .page-resumo-anual .month-card-head h4 {
+        font-size: 0.82rem;
+    }
+
+    .page-resumo-anual .month-card-meta small {
+        font-size: 0.64rem;
+    }
+
+    .page-resumo-anual .month-card-item strong {
+        font-size: 0.76rem;
+    }
+
+    .page-resumo-anual .month-card-details summary {
+        font-size: 0.66rem;
+    }
+
+    .page-resumo-mes-saldo .layout {
+        width: 98vw;
+        margin: 10px auto 18px;
+        gap: 10px;
+    }
+
+    .page-resumo-mes-saldo .table-panel {
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .page-resumo-mes-saldo .resumo-rapido-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .page-resumo-mes-saldo .resumo-rapido-item {
+        padding: 9px;
+    }
+
+    .page-resumo-mes-saldo .resumo-rapido-item small {
+        font-size: 0.6rem;
+    }
+
+    .page-resumo-mes-saldo .resumo-rapido-item strong {
+        font-size: 0.8rem;
+    }
+
+    .page-resumo-mes-saldo .resumo-rapido-item span {
+        font-size: 0.66rem;
+    }
+
+    .page-resumo-mes-saldo h2 {
+        font-size: 0.9rem;
+    }
+
+    .page-resumo-mes-saldo .mobile-view-controls {
+        justify-content: stretch;
+    }
+
+    .page-resumo-mes-saldo .mobile-view-toggle {
+        width: 100%;
+        font-size: 0.66rem;
+        padding: 7px 10px;
+    }
+
+    .page-resumo-mes-saldo .resumo-mes-card-head h3 {
+        font-size: 0.82rem;
+    }
+
+    .page-resumo-mes-saldo .resumo-mes-card-head strong {
+        font-size: 0.82rem;
+    }
+
+    .page-resumo-mes-saldo .resumo-mes-card-grid {
+        grid-template-columns: 1fr;
+        gap: 7px;
+    }
+
+    .page-resumo-mes-saldo .resumo-mes-card-grid small {
+        font-size: 0.62rem;
+    }
+
+    .page-resumo-mes-saldo .resumo-mes-card-grid strong {
+        font-size: 0.74rem;
     }
 }
 
