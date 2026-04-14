@@ -2,33 +2,18 @@
     const dados = globalThis.DADOS_FINANCEIROS;
     if (!dados) return;
 
-    const moeda = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
+    const appUtils = globalThis.EXTRATO_APP_UTILS;
+    const uiUtils = appUtils?.getUiUtils?.() || globalThis.EXTRATO_UI_UTILS;
+    if (!uiUtils) return;
 
-    const formatarDataISO = (iso) => {
-        const data = new Date(iso);
-        if (Number.isNaN(data.getTime())) return '-';
-        return data.toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-    };
-
-    const escapeHtml = (texto) =>
-        String(texto)
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
+    const moeda = uiUtils.criarFormatadorMoeda();
+    const formatarDataISO = uiUtils.formatarDataISO;
+    const escapeHtml = uiUtils.escapeHtml;
 
     const cards = [
         {
             titulo: 'Periodo',
-            valor: `${dados.periodo.inicio} ate ${dados.periodo.fim}`,
+            valor: `${formatarDataISO(dados.periodo.inicio)} ate ${formatarDataISO(dados.periodo.fim)}`,
         },
         {
             titulo: 'Entradas Totais',

@@ -1,58 +1,19 @@
 (function () {
     const dados = globalThis.DADOS_FINANCEIROS;
-    const cargas = globalThis.INTER_CARGAS || [];
+    const cargas = globalThis.EXTRATO_CARGAS || [];
     if (!dados) return;
 
-    const moeda = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
+    const appUtils = globalThis.EXTRATO_APP_UTILS;
+    if (!appUtils) return;
 
-    const formatarDataISO = (iso) => {
-        const data = new Date(iso);
-        if (Number.isNaN(data.getTime())) return '-';
-        return data.toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-    };
+    const uiUtils = appUtils.getUiUtils();
 
-    const escapeHtml = (texto) =>
-        String(texto)
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
+    const moeda = uiUtils.criarFormatadorMoeda();
+    const formatarDataISO = uiUtils.formatarDataISO;
+    const escapeHtml = uiUtils.escapeHtml;
 
-    const privacyUtils = globalThis.INTER_PRIVACY_UTILS || {
-        classificarCategoria: () => 'Outros',
-        anonimizarDescricaoPorCategoria: (descricao) => descricao,
-    };
-
-    const ORDEM_MESES = [
-        'JANEIRO',
-        'FEVEREIRO',
-        'MARCO',
-        'ABRIL',
-        'MAIO',
-        'JUNHO',
-        'JULHO',
-        'AGOSTO',
-        'SETEMBRO',
-        'OUTUBRO',
-        'NOVEMBRO',
-        'DEZEMBRO',
-    ];
-
-    const extrairOrdemMesAno = (mesTexto) => {
-        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
-        const ano = Number.parseInt(anoTexto, 10);
-        const mes = ORDEM_MESES.indexOf(mesNome);
-        if (!Number.isFinite(ano) || mes < 0) return { ano: 0, mes: -1 };
-        return { ano, mes };
-    };
+    const privacyUtils = appUtils.getPrivacyUtils();
+    const extrairOrdemMesAno = appUtils.extrairOrdemMesAno;
 
     const cards = [
         {

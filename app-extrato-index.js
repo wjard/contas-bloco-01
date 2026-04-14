@@ -1,236 +1,37 @@
 (function () {
-    const cargas = globalThis.INTER_TODAS_CARGAS || [];
-    const alvo = document.getElementById('tabelasTodasCargas');
+    const cargas = globalThis.EXTRATO_TODAS_CARGAS || [];
+    const alvo =
+        document.getElementById('extrato-main-content') ||
+        document.getElementById('tabelasTodasCargas');
     if (!alvo) return;
 
-    const moeda = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
+    const appUtils = globalThis.EXTRATO_APP_UTILS;
+    if (!appUtils) return;
 
-    const escapeHtml = (texto) =>
-        String(texto)
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
+    const uiUtils = appUtils.getUiUtils();
 
-    const normalizar = (texto) =>
-        String(texto || '')
-            .normalize('NFD')
-            .replaceAll(/[\u0300-\u036f]/g, '')
-            .toLowerCase();
+    const moeda = uiUtils.criarFormatadorMoeda();
+    const escapeHtml = uiUtils.escapeHtml;
 
-    const limitarTag = (texto) => String(texto).slice(0, 20);
+    const limitarTag = appUtils.limitarTag;
 
-    const temTodos = (texto, termos) =>
-        termos.every((termo) => texto.includes(termo));
+    const privacyUtils = appUtils.getPrivacyUtils();
+    const extrairMesAno = appUtils.extrairMesAno;
 
-    const ORDEM_MESES = [
-        'JANEIRO',
-        'FEVEREIRO',
-        'MARCO',
-        'ABRIL',
-        'MAIO',
-        'JUNHO',
-        'JULHO',
-        'AGOSTO',
-        'SETEMBRO',
-        'OUTUBRO',
-        'NOVEMBRO',
-        'DEZEMBRO',
-    ];
-
-    const REGRAS_CATEGORIA = [
-        {
-            tag: 'Boleto Condo. Bloco',
-            test: (d) =>
-                d.includes('boleto de cobranca recebido') ||
-                d.includes('pix recebido: "') ||
-                temTodos(d, ['pix recebido', 'cp']),
-        },
-        {
-            tag: 'Gratificação Subsind',
-            test: (d) =>
-                temTodos(d, ['pix enviado', 'glayce kelly calisto pena']) ||
-                temTodos(d, ['pix enviado', 'mariana']),
-        },
-        {
-            tag: 'Gratificação Limpeza',
-            test: (d) => temTodos(d, ['pix enviado', 'maria edina ferreira']),
-        },
-        {
-            tag: 'Conta Consumo',
-            test: (d) =>
-                d.includes('pagamento copasa') ||
-                d.includes('companhia de saneamento') ||
-                d.includes('pagamento cemig') ||
-                d.includes('pix enviado cemig') ||
-                d.includes('pix enviado copasa') ||
-                d.includes('cemig distribuicao') ||
-                d.includes('copasa minas gerais') ||
-                d.includes('copasa mg'),
-        },
-        {
-            tag: 'Rateio Agua',
-            test: (d) =>
-                temTodos(d, ['pix enviado', '60701190-seu consumo']) ||
-                d.includes('seu consumo') ||
-                d.includes('seu cosumo') ||
-                temTodos(d, ['leitura', 'hidrometro']),
-        },
-        {
-            tag: 'Repasse Condo. Geral',
-            test: (d) =>
-                temTodos(d, [
-                    'pagamento de titulo',
-                    'residencial village da fonte',
-                ]) ||
-                temTodos(d, ['pix enviado', 'residencial village da fonte']) ||
-                temTodos(d, ['pix', 'sandro']) ||
-                d.includes('sandro souza'),
-        },
-        {
-            tag: 'Seguro/Manut.',
-            test: (d) => {
-                return (
-                    d.includes('tokio marine seguradora') ||
-                    d.includes('seguradora') ||
-                    d.includes('seguradoras') ||
-                    d.includes('desinsetizadora') ||
-                    d.includes('desentupidora') ||
-                    temTodos(d, ['pix enviado', 'incendio']) ||
-                    d.includes('nitro')
-                );
-            },
-        },
-        {
-            tag: 'Devolução',
-            test: (d) => temTodos(d, ['pix enviado', 'gleidstone']),
-        },
-        {
-            tag: 'Material Limpeza',
-            test: (d) =>
-                temTodos(d, ['pix enviado', 'supermercados bh']) ||
-                temTodos(d, ['pix enviado', 'comercio de alimentos']),
-        },
-        {
-            tag: 'Terceiros',
-            test: (d) =>
-                d.includes('pagamento efetuado') ||
-                temTodos(d, ['pix enviado', 'cp']),
-        },
-    ];
-
-    const LEGENDA_CATEGORIAS = [
-        { nome: 'Boleto Condo. Bloco', classe: 'cat-boleto' },
-        { nome: 'Gratificação Subsind', classe: 'cat-subsindico' },
-        { nome: 'Gratificação Limpeza', classe: 'cat-limpeza' },
-        { nome: 'Conta Consumo', classe: 'cat-consumo' },
-        { nome: 'Rateio Agua', classe: 'cat-rateio' },
-        { nome: 'Repasse Condo. Geral', classe: 'cat-repasse' },
-        { nome: 'Seguro/Manut.', classe: 'cat-seguro' },
-        { nome: 'Devolução', classe: 'cat-devolucao' },
-        { nome: 'Material Limpeza', classe: 'cat-materiais' },
-        { nome: 'Terceiros', classe: 'cat-terceiros' },
-        { nome: 'Outros', classe: 'cat-outros' },
-    ];
+    const LEGENDA_CATEGORIAS = appUtils.LEGENDA_CATEGORIAS;
 
     const CLASSE_CATEGORIA = new Map(
         LEGENDA_CATEGORIAS.map((item) => [item.nome, item.classe]),
     );
 
-    // Config opcional para definir manualmente quebras de linha nos titulos das colunas.
-    // Exemplo: { 'Repasse Condo. Geral': 'Repasse Condo.<br>Geral' }
-    const CONFIG_ROTULO_TAG_COLUNA = {
-        'Boleto Condo. Bloco': 'Boleto Cond.<br>Bloco',
-        'Repasse Condo. Geral': 'Repasse Cond.<br>Geral',
-        'Material Limpeza': 'Material<br>Limpeza',
-        'Conta Consumo': 'Conta<br>Consumo',
-        'Rateio Agua': 'Rateio<br>Água',
-        'Seguro/Manut.': 'Seguro/<br>Manut.',
-    };
-    const LIMITE_CHARS_TAG_COLUNA = 16;
+    const formatarRotuloColunaTag = appUtils.formatarRotuloColunaTag;
 
     const categoriasAtivas = new Set();
     let mostrarTabelaMobile = false;
     let mostrarTodasTagsMobileTabela = false;
 
-    const quebrarPalavraPorLimite = (palavra, limite) => {
-        const partes = [];
-        let restante = String(palavra || '');
-
-        while (restante.length > limite) {
-            partes.push(restante.slice(0, limite));
-            restante = restante.slice(limite);
-        }
-
-        if (restante) partes.push(restante);
-        return partes;
-    };
-
-    const empilharPalavraLonga = (palavra, limite, linhas) => {
-        const partes = quebrarPalavraPorLimite(palavra, limite);
-        if (!partes.length) return '';
-        linhas.push(...partes.slice(0, -1));
-        return partes.at(-1) || '';
-    };
-
-    const quebrarTextoPorLimite = (texto, limite) => {
-        const textoLimpo = String(texto || '').trim();
-        if (!textoLimpo) return '';
-        if (textoLimpo.length <= limite) return escapeHtml(textoLimpo);
-
-        const palavras = textoLimpo.split(/\s+/);
-        const linhas = [];
-        let linhaAtual = '';
-
-        for (const palavra of palavras) {
-            const candidato = linhaAtual ? `${linhaAtual} ${palavra}` : palavra;
-
-            if (candidato.length <= limite) {
-                linhaAtual = candidato;
-                continue;
-            }
-
-            if (linhaAtual) {
-                linhas.push(linhaAtual);
-            }
-
-            if (palavra.length <= limite) {
-                linhaAtual = palavra;
-                continue;
-            }
-
-            linhaAtual = empilharPalavraLonga(palavra, limite, linhas);
-        }
-
-        if (linhaAtual) linhas.push(linhaAtual);
-        return linhas.map((item) => escapeHtml(item)).join('<br>');
-    };
-
-    const formatarRotuloColunaTag = (nomeTag) => {
-        const valorConfigurado = CONFIG_ROTULO_TAG_COLUNA[nomeTag];
-        if (valorConfigurado) {
-            return String(valorConfigurado)
-                .split(/<br\s*\/?\s*>/i)
-                .map((parte) => escapeHtml(parte.trim()))
-                .filter(Boolean)
-                .join('<br>');
-        }
-
-        return quebrarTextoPorLimite(nomeTag, LIMITE_CHARS_TAG_COLUNA);
-    };
-
-    const classificarCategoria = (descricao) => {
-        const desc = normalizar(descricao);
-        const regra = REGRAS_CATEGORIA.find((item) => item.test(desc));
-        return regra ? regra.tag : 'Outros';
-    };
-
     const getCategoriaLancamento = (item) =>
-        limitarTag(classificarCategoria(item.descricao));
+        limitarTag(privacyUtils.classificarCategoria(item.descricao));
 
     const filtrarLancamentos = (lancamentos) => {
         if (!categoriasAtivas.size) return lancamentos || [];
@@ -265,18 +66,6 @@
                 <div class="category-legend-tags">${tagTodas}${tags}</div>
             </section>
         `;
-    };
-
-    const extrairMesAno = (mesTexto) => {
-        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
-        const ano = Number.parseInt(anoTexto, 10);
-        const ordemMes = ORDEM_MESES.indexOf(mesNome);
-
-        if (!Number.isFinite(ano) || ordemMes < 0) {
-            return null;
-        }
-
-        return { ano, mesNome, ordemMes };
     };
 
     const categoriasVisiveis = () => {

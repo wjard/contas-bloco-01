@@ -1,153 +1,37 @@
 (function () {
-    const cargas = globalThis.INTER_TODAS_CARGAS || [];
-    const alvo = document.getElementById('tabelasTodasCargas');
+    const cargas = globalThis.EXTRATO_TODAS_CARGAS || [];
+    const alvo =
+        document.getElementById('extrato-main-content') ||
+        document.getElementById('tabelasTodasCargas');
     if (!alvo) return;
 
-    const moeda = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
+    const appUtils = globalThis.EXTRATO_APP_UTILS;
+    if (!appUtils) return;
 
-    const escapeHtml = (texto) =>
-        String(texto)
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
+    const uiUtils = appUtils.getUiUtils();
 
-    const normalizar = (texto) =>
-        String(texto || '')
-            .normalize('NFD')
-            .replaceAll(/[\u0300-\u036f]/g, '')
-            .toLowerCase();
+    const moeda = uiUtils.criarFormatadorMoeda();
+    const escapeHtml = uiUtils.escapeHtml;
 
-    const limitarTag = (texto) => String(texto).slice(0, 20);
+    const limitarTag = appUtils.limitarTag;
 
-    const formatarDataCurta = (valor) => {
-        const texto = String(valor || '').trim();
-        if (!texto) return '';
+    const formatarDataCurta = uiUtils.formatarDataCurta;
 
-        const pad2 = (n) => String(n).padStart(2, '0');
+    const privacyUtils = appUtils.getPrivacyUtils();
 
-        const matchPtBr = texto.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
-        if (matchPtBr) {
-            const dia = Number(matchPtBr[1]);
-            const mes = Number(matchPtBr[2]);
-            const anoTexto = matchPtBr[3];
-            const ano2 = anoTexto.length === 2 ? anoTexto : anoTexto.slice(-2);
-            return `${pad2(dia)}/${pad2(mes)}/${ano2}`;
-        }
-
-        const matchIso = texto.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-        if (matchIso) {
-            const ano2 = matchIso[1].slice(-2);
-            const mes = Number(matchIso[2]);
-            const dia = Number(matchIso[3]);
-            return `${pad2(dia)}/${pad2(mes)}/${ano2}`;
-        }
-
-        const data = new Date(texto);
-        if (!Number.isNaN(data.getTime())) {
-            return `${pad2(data.getDate())}/${pad2(data.getMonth() + 1)}/${String(data.getFullYear()).slice(-2)}`;
-        }
-
-        return texto;
-    };
-
-    const privacyUtils = globalThis.INTER_PRIVACY_UTILS || {
-        classificarCategoria: () => 'Outros',
-        anonimizarDescricaoPorCategoria: (descricao) => descricao,
-    };
-
-    const LEGENDA_CATEGORIAS = [
-        { nome: 'Boleto Condo. Bloco', classe: 'cat-boleto' },
-        { nome: 'Gratificação Subsind', classe: 'cat-subsindico' },
-        { nome: 'Gratificação Limpeza', classe: 'cat-limpeza' },
-        { nome: 'Conta Consumo', classe: 'cat-consumo' },
-        { nome: 'Rateio Agua', classe: 'cat-rateio' },
-        { nome: 'Repasse Condo. Geral', classe: 'cat-repasse' },
-        { nome: 'Seguro/Manut.', classe: 'cat-seguro' },
-        { nome: 'Devolução', classe: 'cat-devolucao' },
-        { nome: 'Material Limpeza', classe: 'cat-materiais' },
-        { nome: 'Terceiros', classe: 'cat-terceiros' },
-        { nome: 'Outros', classe: 'cat-outros' },
-    ];
+    const LEGENDA_CATEGORIAS = appUtils.LEGENDA_CATEGORIAS;
 
     const categoriasAtivas = new Set();
 
-    const ORDEM_MESES = [
-        'JANEIRO',
-        'FEVEREIRO',
-        'MARCO',
-        'ABRIL',
-        'MAIO',
-        'JUNHO',
-        'JULHO',
-        'AGOSTO',
-        'SETEMBRO',
-        'OUTUBRO',
-        'NOVEMBRO',
-        'DEZEMBRO',
-    ];
+    const extrairOrdemMesAno = appUtils.extrairOrdemMesAno;
 
-    const extrairOrdemMesAno = (mesTexto) => {
-        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
-        const ano = Number.parseInt(anoTexto, 10);
-        const mes = ORDEM_MESES.indexOf(mesNome);
-        if (!Number.isFinite(ano) || mes < 0) return { ano: 0, mes: -1 };
-        return { ano, mes };
-    };
-
-    const getClasseCategoria = (categoria) => {
-        const valor = normalizar(categoria);
-
-        if (valor.includes('boleto condo. bloco')) return 'cat-boleto';
-        if (valor.includes('gratificacao subsind')) return 'cat-subsindico';
-        if (valor.includes('gratificacao limpeza')) return 'cat-limpeza';
-        if (valor.includes('conta consumo')) return 'cat-consumo';
-        if (valor.includes('rateio agua')) return 'cat-rateio';
-        if (valor.includes('repasse condo')) return 'cat-repasse';
-        if (valor.includes('seguro/manut')) return 'cat-seguro';
-        if (valor.includes('devolucao')) return 'cat-devolucao';
-        if (valor.includes('material limpeza')) return 'cat-materiais';
-        if (valor.includes('terceiros')) return 'cat-terceiros';
-
-        return 'cat-outros';
-    };
+    const getClasseCategoria = appUtils.getClasseCategoria;
 
     const getCategoriaLancamento = (item) =>
         limitarTag(privacyUtils.classificarCategoria(item.descricao));
 
-    const normalizarUrlComprovante = (valor) => {
-        const texto = String(valor || '').trim();
-        if (!texto) return null;
-
-        const caminho = texto.replaceAll('\\', '/');
-        const possuiProtocolo = /^https?:\/\//i.test(caminho);
-        const iniciaComWww = /^www\./i.test(caminho);
-
-        if (possuiProtocolo) {
-            return encodeURI(caminho);
-        }
-
-        if (iniciaComWww) {
-            return encodeURI(`https://${caminho}`);
-        }
-
-        if (
-            caminho.startsWith('./') ||
-            caminho.startsWith('../') ||
-            caminho.startsWith('/')
-        ) {
-            return encodeURI(caminho);
-        }
-
-        return encodeURI(`./${caminho}`);
-    };
-
-    const isCredito = (item) =>
-        item.tipo === 'entrada' || Number(item.valor || 0) > 0;
+    const normalizarUrlComprovante = appUtils.normalizarUrlComprovante;
+    const isCredito = appUtils.isCredito;
 
     const filtrarLancamentos = (lancamentos) => {
         if (!categoriasAtivas.size) return lancamentos || [];

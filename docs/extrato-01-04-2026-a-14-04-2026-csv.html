@@ -1,15 +1,13 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Extrato Extrato-01-04-2026-a-14-04-2026-CSV</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap"
-      rel="stylesheet" />
-    <style>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Extrato Extrato-01-04-2026-a-14-04-2026-CSV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
 :root {
     --bg: #f7f1e8;
     --bg-2: #f0dfce;
@@ -1230,35 +1228,33 @@ td.positive {
 }
 
 </style>
-  </head>
-  <body>
-    <div class="noise"></div>
-    <main class="layout">
-      <header class="hero reveal">
-        <p class="eyebrow">Extrato Bancário</p>
-        <h1>Extrato Extrato-01-04-2026-a-14-04-2026-CSV</h1>
-        <p class="subtitle">Tabela mensal detalhada de entradas e saidas com
-          base no CSV.</p>
-        <div class="page-switcher">
-          <label for="cargaSelectDetalhe">Escolher carga:</label>
-          <select id="cargaSelectDetalhe">
-            <option value>Carregando opcoes...</option>
-          </select>
-        </div>
-        <p class="subtitle"><a href="extrato-index.html">Voltar para selecao de
-            cargas</a></p>
-      </header>
-      <section class="cards reveal delay-1" id="resumoCards"></section>
-      <section class="table-panel reveal delay-2">
-        <div class="panel-head">
-          <h2>Tabelas Detalhadas por Mes/Ano</h2>
-          <p>Fonte: dados-extrato/extrato-01-04-2026-a-14-04-2026-csv.js</p>
-        </div>
-        <div id="tabelasMeses" class="months-grid"></div>
-      </section>
-    </main>
-    <script>
-window.INTER_CARGAS = [
+</head>
+<body>
+  <div class="noise"></div>
+  <main class="layout">
+    <header class="hero reveal">
+    <p class="eyebrow">Extrato Bancário</p>
+      <h1>Extrato Extrato-01-04-2026-a-14-04-2026-CSV</h1>
+      <p class="subtitle">Tabela mensal detalhada de entradas e saidas com base no CSV.</p>
+      <div class="page-switcher">
+        <label for="cargaSelectDetalhe">Escolher carga:</label>
+        <select id="cargaSelectDetalhe">
+          <option value="">Carregando opcoes...</option>
+        </select>
+      </div>
+      <p class="subtitle"><a href="extrato-index.html">Voltar para selecao de cargas</a></p>
+    </header>
+    <section class="cards reveal delay-1" id="resumoCards"></section>
+    <section class="table-panel reveal delay-2">
+      <div class="panel-head">
+        <h2>Tabelas Detalhadas por Mes/Ano</h2>
+        <p>Fonte: dados-extrato/extrato-01-04-2026-a-14-04-2026-csv.js</p>
+      </div>
+      <div id="tabelasMeses" class="months-grid"></div>
+    </section>
+  </main>
+  <script>
+window.EXTRATO_CARGAS = [
     {
         arquivoCsv: 'Extrato-01-04-2026-a-14-04-2026-CSV.csv',
         dadosJs: 'dados-extrato/extrato-01-04-2026-a-14-04-2026-csv.js',
@@ -1288,12 +1284,13 @@ window.INTER_CARGAS = [
         totalLancamentos: 104,
     },
 ];
+window.EXTRATO_CARGAS;
 
 </script>
-    <script>
+  <script>
 window.DADOS_FINANCEIROS = {
     "arquivo": "Extrato-01-04-2026-a-14-04-2026-CSV.csv",
-    "atualizadoEm": "2026-04-14T19:34:21.814Z",
+    "atualizadoEm": "2026-04-14T22:03:15.178Z",
     "periodo": {
         "inicio": "ABRIL-2026",
         "fim": "ABRIL-2026"
@@ -1347,6 +1344,307 @@ window.DADOS_FINANCEIROS = {
         }
     ]
 };
+
+</script>
+    <script>
+(function () {
+    const escapeHtml = (texto) =>
+        String(texto)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+
+    const normalizar = (texto) =>
+        String(texto || '')
+            .normalize('NFD')
+            .replaceAll(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
+
+    const criarFormatadorMoeda = () =>
+        new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        });
+
+    const formatarDataISO = (iso) => {
+        const data = new Date(iso);
+        if (Number.isNaN(data.getTime())) return '-';
+        return data.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+    };
+
+    const formatarDataCurta = (valor) => {
+        const texto = String(valor || '').trim();
+        if (!texto) return '';
+
+        const pad2 = (n) => String(n).padStart(2, '0');
+
+        const matchPtBr = /^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/.exec(texto);
+        if (matchPtBr) {
+            const dia = Number(matchPtBr[1]);
+            const mes = Number(matchPtBr[2]);
+            const anoTexto = matchPtBr[3];
+            const ano2 = anoTexto.length === 2 ? anoTexto : anoTexto.slice(-2);
+            return `${pad2(dia)}/${pad2(mes)}/${ano2}`;
+        }
+
+        const matchIso = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(texto);
+        if (matchIso) {
+            const ano2 = matchIso[1].slice(-2);
+            const mes = Number(matchIso[2]);
+            const dia = Number(matchIso[3]);
+            return `${pad2(dia)}/${pad2(mes)}/${ano2}`;
+        }
+
+        const data = new Date(texto);
+        if (!Number.isNaN(data.getTime())) {
+            return `${pad2(data.getDate())}/${pad2(data.getMonth() + 1)}/${String(data.getFullYear()).slice(-2)}`;
+        }
+
+        return texto;
+    };
+
+    const uiUtils = {
+        escapeHtml,
+        normalizar,
+        criarFormatadorMoeda,
+        formatarDataISO,
+        formatarDataCurta,
+    };
+
+    globalThis.EXTRATO_UI_UTILS = uiUtils;
+})();
+
+</script>
+    <script>
+(function () {
+    const ORDEM_MESES = [
+        'JANEIRO',
+        'FEVEREIRO',
+        'MARCO',
+        'ABRIL',
+        'MAIO',
+        'JUNHO',
+        'JULHO',
+        'AGOSTO',
+        'SETEMBRO',
+        'OUTUBRO',
+        'NOVEMBRO',
+        'DEZEMBRO',
+    ];
+
+    const LEGENDA_CATEGORIAS = [
+        { nome: 'Boleto Condo. Bloco', classe: 'cat-boleto' },
+        { nome: 'Gratificação Subsind', classe: 'cat-subsindico' },
+        { nome: 'Gratificação Limpeza', classe: 'cat-limpeza' },
+        { nome: 'Conta Consumo', classe: 'cat-consumo' },
+        { nome: 'Rateio Agua', classe: 'cat-rateio' },
+        { nome: 'Repasse Condo. Geral', classe: 'cat-repasse' },
+        { nome: 'Seguro/Manut.', classe: 'cat-seguro' },
+        { nome: 'Devolução', classe: 'cat-devolucao' },
+        { nome: 'Material Limpeza', classe: 'cat-materiais' },
+        { nome: 'Terceiros', classe: 'cat-terceiros' },
+        { nome: 'Outros', classe: 'cat-outros' },
+    ];
+
+    const CONFIG_ROTULO_TAG_COLUNA = {
+        'Boleto Condo. Bloco': 'Boleto Cond.<br>Bloco',
+        'Repasse Condo. Geral': 'Repasse Cond.<br>Geral',
+        'Material Limpeza': 'Material<br>Limpeza',
+        'Conta Consumo': 'Conta<br>Consumo',
+        'Rateio Agua': 'Rateio<br>Água',
+        'Seguro/Manut.': 'Seguro/<br>Manut.',
+    };
+
+    const LIMITE_CHARS_TAG_COLUNA = 16;
+
+    const quebrarPalavraPorLimite = (palavra, limite) => {
+        const partes = [];
+        let restante = String(palavra || '');
+
+        while (restante.length > limite) {
+            partes.push(restante.slice(0, limite));
+            restante = restante.slice(limite);
+        }
+
+        if (restante) partes.push(restante);
+        return partes;
+    };
+
+    const empilharPalavraLonga = (palavra, limite, linhas) => {
+        const partes = quebrarPalavraPorLimite(palavra, limite);
+        if (!partes.length) return '';
+        linhas.push(...partes.slice(0, -1));
+        return partes.at(-1) || '';
+    };
+
+    const quebrarTextoPorLimite = (texto, limite = LIMITE_CHARS_TAG_COLUNA) => {
+        const escapeHtml = getUiUtils().escapeHtml;
+        const textoLimpo = String(texto || '').trim();
+        if (!textoLimpo) return '';
+        if (textoLimpo.length <= limite) return escapeHtml(textoLimpo);
+
+        const palavras = textoLimpo.split(/\s+/);
+        const linhas = [];
+        let linhaAtual = '';
+
+        for (const palavra of palavras) {
+            const candidato = linhaAtual ? `${linhaAtual} ${palavra}` : palavra;
+
+            if (candidato.length <= limite) {
+                linhaAtual = candidato;
+                continue;
+            }
+
+            if (linhaAtual) {
+                linhas.push(linhaAtual);
+            }
+
+            if (palavra.length <= limite) {
+                linhaAtual = palavra;
+                continue;
+            }
+
+            linhaAtual = empilharPalavraLonga(palavra, limite, linhas);
+        }
+
+        if (linhaAtual) linhas.push(linhaAtual);
+        return linhas.map((item) => escapeHtml(item)).join('<br>');
+    };
+
+    const formatarRotuloColunaTag = (
+        nomeTag,
+        configRotulo = CONFIG_ROTULO_TAG_COLUNA,
+        limite = LIMITE_CHARS_TAG_COLUNA,
+    ) => {
+        const escapeHtml = getUiUtils().escapeHtml;
+        const valorConfigurado = configRotulo[nomeTag];
+        if (valorConfigurado) {
+            return String(valorConfigurado)
+                .split(/<br\s*\/?\s*>/i)
+                .map((parte) => escapeHtml(parte.trim()))
+                .filter(Boolean)
+                .join('<br>');
+        }
+
+        return quebrarTextoPorLimite(nomeTag, limite);
+    };
+
+    const getClasseCategoria = (categoria) => {
+        const normalizar = getUiUtils().normalizar;
+        const valor = normalizar(categoria);
+
+        if (valor.includes('boleto condo. bloco')) return 'cat-boleto';
+        if (valor.includes('gratificacao subsind')) return 'cat-subsindico';
+        if (valor.includes('gratificacao limpeza')) return 'cat-limpeza';
+        if (valor.includes('conta consumo')) return 'cat-consumo';
+        if (valor.includes('rateio agua')) return 'cat-rateio';
+        if (valor.includes('repasse condo')) return 'cat-repasse';
+        if (valor.includes('seguro/manut')) return 'cat-seguro';
+        if (valor.includes('devolucao')) return 'cat-devolucao';
+        if (valor.includes('material limpeza')) return 'cat-materiais';
+        if (valor.includes('terceiros')) return 'cat-terceiros';
+
+        return 'cat-outros';
+    };
+
+    const getUiUtils = () =>
+        globalThis.EXTRATO_UI_UTILS || {
+            criarFormatadorMoeda: () =>
+                new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                }),
+            formatarDataISO: () => '-',
+            escapeHtml: String,
+            normalizar: (texto) => String(texto || '').toLowerCase(),
+            formatarDataCurta: (valor) => String(valor || ''),
+        };
+
+    const getPrivacyUtils = () =>
+        globalThis.EXTRATO_PRIVACY_UTILS || {
+            classificarCategoria: () => 'Outros',
+            anonimizarDescricaoPorCategoria: (descricao) => descricao,
+        };
+
+    const extrairOrdemMesAno = (mesTexto) => {
+        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
+        const ano = Number.parseInt(anoTexto, 10);
+        const mes = ORDEM_MESES.indexOf(mesNome);
+        if (!Number.isFinite(ano) || mes < 0) return { ano: 0, mes: -1 };
+        return { ano, mes };
+    };
+
+    const extrairMesAno = (mesTexto) => {
+        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
+        const ano = Number.parseInt(anoTexto, 10);
+        const ordemMes = ORDEM_MESES.indexOf(mesNome);
+
+        if (!Number.isFinite(ano) || ordemMes < 0) return null;
+
+        return {
+            mesNome,
+            ano,
+            ordemMes,
+            chave: `${ano}-${String(ordemMes + 1).padStart(2, '0')}`,
+            rotulo: `${mesNome}/${ano}`,
+        };
+    };
+
+    const limitarTag = (texto, limite = 20) => String(texto).slice(0, limite);
+
+    const isEntrada = (item) =>
+        item?.tipo === 'entrada' || Number(item?.valor || 0) > 0;
+
+    const isCredito = (item) => isEntrada(item);
+
+    const normalizarUrlComprovante = (valor) => {
+        const texto = String(valor || '').trim();
+        if (!texto) return null;
+
+        const caminho = texto.replaceAll('\\', '/');
+        const possuiProtocolo = /^https?:\/\//i.test(caminho);
+        const iniciaComWww = /^www\./i.test(caminho);
+
+        if (possuiProtocolo) return encodeURI(caminho);
+        if (iniciaComWww) return encodeURI(`https://${caminho}`);
+
+        if (
+            caminho.startsWith('./') ||
+            caminho.startsWith('../') ||
+            caminho.startsWith('/')
+        ) {
+            return encodeURI(caminho);
+        }
+
+        return encodeURI(`./${caminho}`);
+    };
+
+    const appUtils = {
+        ORDEM_MESES,
+        LEGENDA_CATEGORIAS,
+        CONFIG_ROTULO_TAG_COLUNA,
+        LIMITE_CHARS_TAG_COLUNA,
+        quebrarTextoPorLimite,
+        formatarRotuloColunaTag,
+        getUiUtils,
+        getPrivacyUtils,
+        extrairOrdemMesAno,
+        extrairMesAno,
+        limitarTag,
+        isEntrada,
+        isCredito,
+        normalizarUrlComprovante,
+        getClasseCategoria,
+    };
+
+    globalThis.EXTRATO_APP_UTILS = appUtils;
+})();
 
 </script>
     <script>
@@ -1459,69 +1757,32 @@ window.DADOS_FINANCEIROS = {
         return descricao;
     };
 
-    globalThis.INTER_PRIVACY_UTILS = {
+    const privacyUtils = {
         classificarCategoria,
         anonimizarDescricaoPorCategoria,
     };
+
+    globalThis.EXTRATO_PRIVACY_UTILS = privacyUtils;
 })();
 
 </script>
-    <script>
+  <script>
 (function () {
     const dados = globalThis.DADOS_FINANCEIROS;
-    const cargas = globalThis.INTER_CARGAS || [];
+    const cargas = globalThis.EXTRATO_CARGAS || [];
     if (!dados) return;
 
-    const moeda = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
+    const appUtils = globalThis.EXTRATO_APP_UTILS;
+    if (!appUtils) return;
 
-    const formatarDataISO = (iso) => {
-        const data = new Date(iso);
-        if (Number.isNaN(data.getTime())) return '-';
-        return data.toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-    };
+    const uiUtils = appUtils.getUiUtils();
 
-    const escapeHtml = (texto) =>
-        String(texto)
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
+    const moeda = uiUtils.criarFormatadorMoeda();
+    const formatarDataISO = uiUtils.formatarDataISO;
+    const escapeHtml = uiUtils.escapeHtml;
 
-    const privacyUtils = globalThis.INTER_PRIVACY_UTILS || {
-        classificarCategoria: () => 'Outros',
-        anonimizarDescricaoPorCategoria: (descricao) => descricao,
-    };
-
-    const ORDEM_MESES = [
-        'JANEIRO',
-        'FEVEREIRO',
-        'MARCO',
-        'ABRIL',
-        'MAIO',
-        'JUNHO',
-        'JULHO',
-        'AGOSTO',
-        'SETEMBRO',
-        'OUTUBRO',
-        'NOVEMBRO',
-        'DEZEMBRO',
-    ];
-
-    const extrairOrdemMesAno = (mesTexto) => {
-        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
-        const ano = Number.parseInt(anoTexto, 10);
-        const mes = ORDEM_MESES.indexOf(mesNome);
-        if (!Number.isFinite(ano) || mes < 0) return { ano: 0, mes: -1 };
-        return { ano, mes };
-    };
+    const privacyUtils = appUtils.getPrivacyUtils();
+    const extrairOrdemMesAno = appUtils.extrairOrdemMesAno;
 
     const cards = [
         {
@@ -1651,5 +1912,5 @@ window.DADOS_FINANCEIROS = {
 })();
 
 </script>
-  </body>
+</body>
 </html>

@@ -18,7 +18,6 @@ Projeto estatico para visualizacao de extratos e resumos financeiros, com geraca
 
 - `/extrato-index.html`: seletor de cargas (detalhamento por arquivo).
 - `/extrato-*.html`: detalhamento individual por arquivo CSV.
-- `/consolidado-inicial.html`: versao legada.
 
 ## Mapeamento de Scripts
 
@@ -26,6 +25,7 @@ Projeto estatico para visualizacao de extratos e resumos financeiros, com geraca
 - `app-extrato-resumo-mes-saldo.js` -> `resumo-por-mes-saldo.html`
 - `app-extrato-detalhado.js` -> `details.html`
 - `app-extrato.js` -> `extrato-*.html`
+- `ui-utils.js` -> util compartilhado de escape/moeda/datas
 - `extrato-privacy-utils.js` -> util compartilhado de classificacao/anonimizacao de descricao
 
 ## Privacidade de Descricao

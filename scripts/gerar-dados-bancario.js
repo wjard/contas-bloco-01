@@ -4,10 +4,10 @@
 
     if (isBrowser) {
         // Browser loader: keeps legacy file name while avoiding Node-only code.
-        const carregado = !!globalThis.INTER_TODAS_CARGAS;
+        const carregado = !!globalThis.EXTRATO_TODAS_CARGAS;
 
         if (carregado) {
-            globalThis.GERAR_DADOS_INTER_STATUS = 'todas-cargas ja carregado';
+            globalThis.GERAR_DADOS_EXTRATO_STATUS = 'todas-cargas ja carregado';
             return;
         }
 
@@ -15,10 +15,10 @@
         script.src = './dados-extrato/todas-cargas.js';
         script.defer = true;
         script.onload = function () {
-            globalThis.GERAR_DADOS_INTER_STATUS = 'todas-cargas carregado';
+            globalThis.GERAR_DADOS_EXTRATO_STATUS = 'todas-cargas carregado';
         };
         script.onerror = function () {
-            globalThis.GERAR_DADOS_INTER_STATUS =
+            globalThis.GERAR_DADOS_EXTRATO_STATUS =
                 'erro ao carregar dados-extrato/todas-cargas.js';
         };
 
@@ -372,11 +372,11 @@
     }
 
     function gerarConteudoManifest(cargas) {
-        return `window.INTER_CARGAS = ${JSON.stringify(cargas, null, 4)};\n`;
+        return `window.EXTRATO_CARGAS = ${JSON.stringify(cargas, null, 4)};\nwindow.EXTRATO_CARGAS;\n`;
     }
 
     function gerarConteudoTodasCargas(todasCargas) {
-        return `window.INTER_TODAS_CARGAS = ${JSON.stringify(todasCargas, null, 4)};\n`;
+        return `window.EXTRATO_TODAS_CARGAS = ${JSON.stringify(todasCargas, null, 4)};\nwindow.EXTRATO_TODAS_CARGAS;\n`;
     }
 
     function gerarPaginaHtml(carga) {
@@ -417,6 +417,8 @@
   </main>
   <script src="dados-extrato/manifest.js"></script>
   <script src="${carga.dadosJs}"></script>
+    <script src="ui-utils.js"></script>
+    <script src="app-utils.js"></script>
     <script src="extrato-privacy-utils.js"></script>
   <script src="app-extrato.js"></script>
 </body>

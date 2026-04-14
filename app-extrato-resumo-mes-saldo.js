@@ -1,56 +1,23 @@
 (function () {
-    const cargas = globalThis.INTER_TODAS_CARGAS || [];
-    const alvo = document.getElementById('tabelaResumoMes');
+    const cargas = globalThis.EXTRATO_TODAS_CARGAS || [];
+    const alvo =
+        document.getElementById('extrato-main-content') ||
+        document.getElementById('tabelaResumoMes');
     if (!alvo) return;
 
     let mostrarTabelaMobile = false;
 
-    const moeda = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
+    const appUtils = globalThis.EXTRATO_APP_UTILS;
+    if (!appUtils) return;
 
-    const escapeHtml = (texto) =>
-        String(texto)
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
+    const uiUtils = appUtils.getUiUtils();
 
-    const ORDEM_MESES = [
-        'JANEIRO',
-        'FEVEREIRO',
-        'MARCO',
-        'ABRIL',
-        'MAIO',
-        'JUNHO',
-        'JULHO',
-        'AGOSTO',
-        'SETEMBRO',
-        'OUTUBRO',
-        'NOVEMBRO',
-        'DEZEMBRO',
-    ];
+    const moeda = uiUtils.criarFormatadorMoeda();
+    const escapeHtml = uiUtils.escapeHtml;
 
-    const extrairMesAno = (mesTexto) => {
-        const [mesNome, anoTexto] = String(mesTexto || '').split('-');
-        const ano = Number.parseInt(anoTexto, 10);
-        const ordemMes = ORDEM_MESES.indexOf(mesNome);
+    const extrairMesAno = appUtils.extrairMesAno;
 
-        if (!Number.isFinite(ano) || ordemMes < 0) return null;
-
-        return {
-            mesNome,
-            ano,
-            ordemMes,
-            chave: `${ano}-${String(ordemMes + 1).padStart(2, '0')}`,
-            rotulo: `${mesNome}/${ano}`,
-        };
-    };
-
-    const isEntrada = (item) =>
-        item.tipo === 'entrada' || Number(item.valor || 0) > 0;
+    const isEntrada = appUtils.isEntrada;
 
     const garantirMes = (mapMeses, info) => {
         if (mapMeses.has(info.chave)) return mapMeses.get(info.chave);

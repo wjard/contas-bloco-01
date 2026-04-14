@@ -1,4 +1,4 @@
-window.INTER_CARGAS = [
+window.EXTRATO_CARGAS = [
     {
         arquivoCsv: 'Extrato-01-04-2026-a-14-04-2026-CSV.csv',
         dadosJs: 'dados-extrato/extrato-01-04-2026-a-14-04-2026-csv.js',
@@ -28,3 +28,4 @@ window.INTER_CARGAS = [
         totalLancamentos: 104,
     },
 ];
+window.EXTRATO_CARGAS;

@@ -41,7 +41,7 @@ const inlineStyles = (html, htmlPath) => {
     const linkRegex =
         /<link\s+[^>]*href=["']([^"']+\.css(?:\?[^"']*)?)["'][^>]*>/gi;
 
-    return html.replace(linkRegex, (fullMatch, href) => {
+    return html.replaceAll(linkRegex, (fullMatch, href) => {
         const filePath = resolveLocalAsset(htmlPath, href);
         if (!filePath) return fullMatch;
 
@@ -54,7 +54,7 @@ const inlineScripts = (html, htmlPath) => {
     const scriptRegex =
         /<script\s+([^>]*?)src=["']([^"']+\.js(?:\?[^"']*)?)["']([^>]*)><\/script>/gi;
 
-    return html.replace(
+    return html.replaceAll(
         scriptRegex,
         (fullMatch, beforeAttrs, src, afterAttrs) => {
             if (shouldDropScriptFromPublishedHtml(src)) {
@@ -83,9 +83,10 @@ const buildHtml = (htmlPath) => {
 };
 
 const build = () => {
-    if (!fs.existsSync(outDir)) {
-        fs.mkdirSync(outDir, { recursive: true });
+    if (fs.existsSync(outDir)) {
+        fs.rmSync(outDir, { recursive: true, force: true });
     }
+    fs.mkdirSync(outDir, { recursive: true });
 
     const htmlFiles = fs
         .readdirSync(rootDir, { withFileTypes: true })

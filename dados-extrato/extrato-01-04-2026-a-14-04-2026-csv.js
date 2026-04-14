@@ -1,6 +1,6 @@
 window.DADOS_FINANCEIROS = {
     "arquivo": "Extrato-01-04-2026-a-14-04-2026-CSV.csv",
-    "atualizadoEm": "2026-04-14T19:34:21.814Z",
+    "atualizadoEm": "2026-04-14T22:03:15.178Z",
     "periodo": {
         "inicio": "ABRIL-2026",
         "fim": "ABRIL-2026"

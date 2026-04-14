@@ -107,8 +107,10 @@
         return descricao;
     };
 
-    globalThis.INTER_PRIVACY_UTILS = {
+    const privacyUtils = {
         classificarCategoria,
         anonimizarDescricaoPorCategoria,
     };
+
+    globalThis.EXTRATO_PRIVACY_UTILS = privacyUtils;
 })();
