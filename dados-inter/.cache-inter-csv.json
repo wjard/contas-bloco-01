@@ -1,0 +1,26 @@
+{
+  "versao": 1,
+  "arquivos": {
+    "Extrato-01-01-2024-a-31-12-2024-CSV.csv": {
+      "hash": "bb3d8e4468afd3e6373305def00c9ed2906af1d4ac9c7e0926829b0c6cbfe84d",
+      "atualizadoEm": "2026-04-14T15:34:22.579Z",
+      "dadosJs": "dados-inter/extrato-01-01-2024-a-31-12-2024-csv.js",
+      "paginaHtml": "extrato-01-01-2024-a-31-12-2024-csv.html",
+      "totalLancamentos": 104
+    },
+    "Extrato-01-01-2025-a-31-12-2025-CSV.csv": {
+      "hash": "4d621dde6f860e302b93598b0597240dc5b1e1c82bf20c2fd1163d57f81fe300",
+      "atualizadoEm": "2026-04-14T15:34:22.590Z",
+      "dadosJs": "dados-inter/extrato-01-01-2025-a-31-12-2025-csv.js",
+      "paginaHtml": "extrato-01-01-2025-a-31-12-2025-csv.html",
+      "totalLancamentos": 279
+    },
+    "Extrato-01-01-2026-a-31-03-2026-CSV.csv": {
+      "hash": "7de96b509f4825aaa78759e5c05d76290330e3e73b939a64dd718643e424d695",
+      "atualizadoEm": "2026-04-14T15:34:22.595Z",
+      "dadosJs": "dados-inter/extrato-01-01-2026-a-31-03-2026-csv.js",
+      "paginaHtml": "extrato-01-01-2026-a-31-03-2026-csv.html",
+      "totalLancamentos": 82
+    }
+  }
+}

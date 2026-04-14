@@ -30,3 +30,25 @@ Os dados ja estao embutidos em arquivos JavaScript locais e sao carregados diret
 
 Nao e necessario para visualizar o site.
 Os arquivos de build Node foram removidos para manter o projeto focado em uso estatico.
+
+## Atualizacao automatica dos CSVs do Inter
+
+O script `scripts/gerar-dados-inter.js` agora tem dois modos:
+
+- Navegador: continua funcionando como loader de `dados-inter/todas-cargas.js`.
+- Node: processa os CSVs de `extrato_banco_inter/` e atualiza `dados-inter/`.
+
+Comandos:
+
+1. Atualizacao incremental (somente arquivos CSV novos/modificados):
+	- `node scripts/gerar-dados-inter.js`
+2. Regeracao completa forçada:
+	- `node scripts/gerar-dados-inter.js --force`
+
+Arquivos atualizados pelo script:
+
+- `dados-inter/manifest.js`
+- `dados-inter/todas-cargas.js`
+- `dados-inter/extrato-*.js`
+- `extrato-*.html` (paginas detalhadas por carga)
+- `dados-inter/.cache-inter-csv.json` (cache de hash para controle incremental)
