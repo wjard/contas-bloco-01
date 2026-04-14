@@ -33,7 +33,7 @@ const shouldDropScriptFromPublishedHtml = (src) => {
         .toLowerCase();
     return (
         normalized === 'scripts/gerar-dados.js' ||
-        normalized === 'scripts/gerar-dados-inter.js'
+        normalized === 'scripts/gerar-dados-bancario.js'
     );
 };
 

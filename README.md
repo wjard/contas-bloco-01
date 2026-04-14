@@ -1,63 +1,105 @@
-# Site Estatico (sem Node em runtime)
+# Prestacao de Contas (Site Estatico)
 
-Este projeto pode rodar de forma 100% estatica, sem servidor Node para uso normal.
-Os dados ja estao embutidos em arquivos JavaScript locais e sao carregados direto no navegador.
+Projeto estatico para visualizacao de extratos e resumos financeiros, com geracao automatica de dados a partir de CSV e publicacao no GitHub Pages.
 
-## Pagina inicial
+## Rotas e Paginas
 
-- `/inicio.html` (menu simples com links para as paginas)
+### Menu principal
 
-## Paginas principais
+- `/index.html`: home com links para as telas principais.
 
-- `/index.html`
-- `/resumo-anual.html`
-- `/resumo-por-mes-saldo.html`
+### Paginas de acesso do usuario
 
-## Como abrir
+- `/resumo-anual.html`: matriz anual por TAG (entradas e saidas).
+- `/resumo-por-mes-saldo.html`: resumo mensal com saldo e saldo geral.
+- `/details.html`: detalhamento consolidado por Ano -> Mes (sem separar por arquivo CSV).
 
-1. Abra a pasta do projeto.
-2. Clique duas vezes em qualquer uma das paginas HTML acima.
-3. O navegador vai carregar os dados automaticamente a partir de `dados-inter/todas-cargas.js`.
+### Paginas auxiliares
 
-## Estrutura de dados usada pelas paginas
+- `/extrato-index.html`: seletor de cargas (detalhamento por arquivo).
+- `/extrato-*.html`: detalhamento individual por arquivo CSV.
+- `/consolidado-inicial.html`: versao legada.
 
-- `dados-inter/todas-cargas.js`: base de dados consolidada usada pelas 3 paginas.
-- `app-inter-detalhado.js`: logica da pagina `index.html`.
-- `app-inter-index.js`: logica da pagina `resumo-anual.html`.
-- `app-inter-resumo-mes-saldo.js`: logica da pagina `resumo-por-mes-saldo.html`.
+## Mapeamento de Scripts
 
-## Node
+- `app-extrato-index.js` -> `resumo-anual.html`
+- `app-extrato-resumo-mes-saldo.js` -> `resumo-por-mes-saldo.html`
+- `app-extrato-detalhado.js` -> `details.html`
+- `app-extrato.js` -> `extrato-*.html`
+- `extrato-privacy-utils.js` -> util compartilhado de classificacao/anonimizacao de descricao
 
-Nao e necessario para visualizar o site.
-Os arquivos de build Node foram removidos para manter o projeto focado em uso estatico.
+## Privacidade de Descricao
 
-## Atualizacao automatica dos CSVs do Inter
+A regra de anonimização foi centralizada em `extrato-privacy-utils.js` e aplicada nas telas de detalhamento.
 
-O script `scripts/gerar-dados-inter.js` agora tem dois modos:
+Para categoria `Boleto Condo. Bloco`:
 
-- Navegador: continua funcionando como loader de `dados-inter/todas-cargas.js`.
-- Node: processa os CSVs de `extrato_banco_inter/` e atualiza `dados-inter/`.
+- Se descricao contiver `Pix Recebido` -> `Boleto Recebido Via Pix`
+- Se descricao contiver `Boleto de cobran` -> `Boleto de Cobranca Recebido`
+
+## Geracao de Dados do Extrato Bancário (Node)
+
+Script: `scripts/gerar-dados-bancario.js`
+
+Modos:
+
+- Navegador: atua como loader de `dados-extrato/todas-cargas.js`.
+- Node: processa CSVs em `extrato_bancario/` e atualiza os artefatos.
 
 Comandos:
 
-1. Atualizacao incremental (somente arquivos CSV novos/modificados):
-	- `node scripts/gerar-dados-inter.js`
-2. Regeracao completa forçada:
-	- `node scripts/gerar-dados-inter.js --force`
-3. Log detalhado arquivo a arquivo:
-	- `node scripts/gerar-dados-inter.js --verbose`
+1. Atualizacao incremental:
+   - `node scripts/gerar-dados-bancario.js`
+2. Regeracao completa:
+   - `node scripts/gerar-dados-bancario.js --force`
+3. Log detalhado:
+   - `node scripts/gerar-dados-bancario.js --verbose`
 4. Regeracao completa com log detalhado:
-	- `node scripts/gerar-dados-inter.js --force --verbose`
+   - `node scripts/gerar-dados-bancario.js --force --verbose`
 
-Arquivos atualizados pelo script:
+Artefatos atualizados:
 
-- `dados-inter/manifest.js`
-- `dados-inter/todas-cargas.js`
-- `dados-inter/extrato-*.js`
-- `extrato-*.html` (paginas detalhadas por carga)
-- `dados-inter/.cache-inter-csv.json` (cache de hash para controle incremental)
+- `dados-extrato/manifest.js`
+- `dados-extrato/todas-cargas.js`
+- `dados-extrato/extrato-*.js`
+- `extrato-*.html`
+- `dados-extrato/.cache-extrato-csv.json`
 
-Quando um CSV e removido de `extrato_banco_inter/`, o script limpa automaticamente os artefatos obsoletos correspondentes:
+Quando um CSV e removido de `extrato_bancario/`, os artefatos obsoletos correspondentes tambem sao removidos automaticamente.
 
-- `dados-inter/extrato-*-csv.js`
-- `extrato-*-csv.html`
+## Publicacao no GitHub Pages (HTML-Only)
+
+Saida publicada: pasta `docs/` contendo somente HTML + `.nojekyll`.
+
+Builder:
+
+- `scripts/build-pages-html-only.js`
+
+Comando local:
+
+- `node scripts/build-pages-html-only.js`
+
+O builder:
+
+- processa todos os `.html` da raiz;
+- embute CSS e JS locais no proprio HTML;
+- remove scripts locais de geracao (`scripts/gerar-dados.js` e `scripts/gerar-dados-bancario.js`) da versao publicada;
+- grava a saida final em `docs/`.
+
+## Automacao de Publicacao
+
+Workflow:
+
+- `.github/workflows/update-docs-html-only.yml`
+
+Comportamento:
+
+- roda em push na `main` (ignorando `docs/**`);
+- gera `docs/` automaticamente;
+- commita e envia alteracoes em `docs/` quando houver diferenca.
+
+Configuracao recomendada no GitHub:
+
+1. Settings -> Pages
+2. Source: `Deploy from a branch`
+3. Branch: `main` / folder: `/docs`

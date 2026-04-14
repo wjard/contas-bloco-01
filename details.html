@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Lançamentos detalhados por dia</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700;800&display=swap"
+            rel="stylesheet" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body class="page-resumo-anual">
+        <div class="noise"></div>
+        <main class="layout">
+            <header class="hero reveal" hidden>
+                <p class="eyebrow">Extrato Bancário</p>
+                <h1>Extratos Consolidados em Uma Página</h1>
+                <p class="subtitle">Visualização detalhada dos lançamentos por
+                    mês/ano.</p>
+                <p class="subtitle"><a href="resumo-anual.html">Abrir nova
+                        página: Matriz anual por TAG</a></p>
+                <p class="subtitle"><a href="consolidado-inicial.html">Abrir
+                        primeira versão (dados consolidados do início do
+                        projeto)</a></p>
+            </header>
+            <section class="table-panel reveal delay-1"
+                id="cargasInterContainer">
+                <div class="panel-head">
+                    <h2>Planilha detalhada por Mês/Ano</h2>
+                </div>
+                <div id="tabelasTodasCargas" class="months-grid"></div>
+            </section>
+        </main>
+        <script src="dados-extrato/todas-cargas.js"></script>
+        <script src="extrato-privacy-utils.js"></script>
+        <script src="app-extrato-detalhado.js"></script>
+    </body>
+</html>
