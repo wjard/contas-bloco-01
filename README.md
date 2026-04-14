@@ -44,6 +44,10 @@ Comandos:
 	- `node scripts/gerar-dados-inter.js`
 2. Regeracao completa forçada:
 	- `node scripts/gerar-dados-inter.js --force`
+3. Log detalhado arquivo a arquivo:
+	- `node scripts/gerar-dados-inter.js --verbose`
+4. Regeracao completa com log detalhado:
+	- `node scripts/gerar-dados-inter.js --force --verbose`
 
 Arquivos atualizados pelo script:
 
@@ -52,3 +56,8 @@ Arquivos atualizados pelo script:
 - `dados-inter/extrato-*.js`
 - `extrato-*.html` (paginas detalhadas por carga)
 - `dados-inter/.cache-inter-csv.json` (cache de hash para controle incremental)
+
+Quando um CSV e removido de `extrato_banco_inter/`, o script limpa automaticamente os artefatos obsoletos correspondentes:
+
+- `dados-inter/extrato-*-csv.js`
+- `extrato-*-csv.html`

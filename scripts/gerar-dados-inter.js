@@ -101,6 +101,45 @@
         return path.join(rootDir, `${slugDoCsv(nomeArquivoCsv)}.html`);
     }
 
+    function apagarArquivoSeExistir(caminhoArquivo) {
+        if (!caminhoArquivo) return false;
+        if (!fs.existsSync(caminhoArquivo)) return false;
+        fs.unlinkSync(caminhoArquivo);
+        return true;
+    }
+
+    function limparArtefatosObsoletos({ cache, arquivosCsvAtuais }) {
+        const csvAtuaisSet = new Set(arquivosCsvAtuais);
+        const removidos = [];
+
+        for (const arquivoCsvAntigo of Object.keys(cache.arquivos)) {
+            if (csvAtuaisSet.has(arquivoCsvAntigo)) continue;
+
+            const entradaCache = cache.arquivos[arquivoCsvAntigo] || {};
+            const dadosJsRel =
+                entradaCache.dadosJs || caminhoDadosJs(arquivoCsvAntigo);
+            const paginaHtmlRel =
+                entradaCache.paginaHtml || caminhoPaginaHtml(arquivoCsvAntigo);
+            const caminhoDados = path.join(rootDir, dadosJsRel);
+            const caminhoPagina = path.join(rootDir, paginaHtmlRel);
+
+            const removeuDados = apagarArquivoSeExistir(caminhoDados);
+            const removeuPagina = apagarArquivoSeExistir(caminhoPagina);
+
+            removidos.push({
+                arquivoCsv: arquivoCsvAntigo,
+                removeuDados,
+                removeuPagina,
+                dadosJs: dadosJsRel,
+                paginaHtml: paginaHtmlRel,
+            });
+
+            delete cache.arquivos[arquivoCsvAntigo];
+        }
+
+        return removidos;
+    }
+
     function calcularHash(buffer) {
         return crypto.createHash('sha256').update(buffer).digest('hex');
     }
@@ -383,6 +422,22 @@
         let inalterados = 0;
         const forcarTudo =
             typeof process !== 'undefined' && process.argv.includes('--force');
+        const forcarVerbose =
+            typeof process !== 'undefined' &&
+            process.argv.includes('--verbose');
+
+        const detalhes = {
+            criados: [],
+            atualizados: [],
+            mantidos: [],
+            removidos: [],
+        };
+
+        const removidos = limparArtefatosObsoletos({
+            cache,
+            arquivosCsvAtuais: arquivosCsv,
+        });
+        detalhes.removidos.push(...removidos);
 
         for (const arquivoCsv of arquivosCsv) {
             const caminhoCsv = path.join(csvDir, arquivoCsv);
@@ -438,6 +493,20 @@
                 if (cacheAtual) alterados += 1;
                 else novos += 1;
 
+                if (cacheAtual) {
+                    detalhes.atualizados.push({
+                        arquivoCsv,
+                        dadosJs: dadosJsRel,
+                        paginaHtml,
+                    });
+                } else {
+                    detalhes.criados.push({
+                        arquivoCsv,
+                        dadosJs: dadosJsRel,
+                        paginaHtml,
+                    });
+                }
+
                 cache.arquivos[arquivoCsv] = {
                     hash,
                     atualizadoEm: new Date().toISOString(),
@@ -447,12 +516,11 @@
                 };
             } else {
                 inalterados += 1;
-            }
-        }
-
-        for (const chave of Object.keys(cache.arquivos)) {
-            if (!arquivosCsv.includes(chave)) {
-                delete cache.arquivos[chave];
+                detalhes.mantidos.push({
+                    arquivoCsv,
+                    dadosJs: dadosJsRel,
+                    paginaHtml,
+                });
             }
         }
 
@@ -472,6 +540,42 @@
         console.log(`[inter] novos: ${novos}`);
         console.log(`[inter] alterados: ${alterados}`);
         console.log(`[inter] inalterados: ${inalterados}`);
+        console.log(`[inter] removidos: ${removidos.length}`);
+        if (removidos.length) {
+            const ids = removidos.map((item) => item.arquivoCsv).join(', ');
+            console.log(`[inter] CSVs removidos e limpos: ${ids}`);
+        }
+
+        if (forcarVerbose) {
+            const imprimirSecao = (titulo, itens, mapFn) => {
+                console.log(`[inter][verbose] ${titulo}: ${itens.length}`);
+                if (!itens.length) return;
+                for (const item of itens) {
+                    console.log(`[inter][verbose] - ${mapFn(item)}`);
+                }
+            };
+
+            imprimirSecao('criados', detalhes.criados, (item) => {
+                return `${item.arquivoCsv} -> ${item.dadosJs} | ${item.paginaHtml}`;
+            });
+
+            imprimirSecao('atualizados', detalhes.atualizados, (item) => {
+                return `${item.arquivoCsv} -> ${item.dadosJs} | ${item.paginaHtml}`;
+            });
+
+            imprimirSecao('mantidos', detalhes.mantidos, (item) => {
+                return `${item.arquivoCsv} -> ${item.dadosJs} | ${item.paginaHtml}`;
+            });
+
+            imprimirSecao('removidos', detalhes.removidos, (item) => {
+                const tipos = [];
+                if (item.removeuDados) tipos.push('dados-inter removido');
+                if (item.removeuPagina) tipos.push('pagina removida');
+                if (!tipos.length) tipos.push('sem arquivo para remover');
+                return `${item.arquivoCsv} -> ${item.dadosJs} | ${item.paginaHtml} (${tipos.join('; ')})`;
+            });
+        }
+
         console.log(
             '[inter] arquivos consolidados atualizados: manifest.js, todas-cargas.js',
         );

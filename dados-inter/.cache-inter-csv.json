@@ -21,6 +21,13 @@
       "dadosJs": "dados-inter/extrato-01-01-2026-a-31-03-2026-csv.js",
       "paginaHtml": "extrato-01-01-2026-a-31-03-2026-csv.html",
       "totalLancamentos": 82
+    },
+    "Extrato-01-04-2026-a-30-04-2026-CSV.csv": {
+      "hash": "200bd783e3c82fd8b80a757c8de762d3cd1a4623962a9d44150ea910c275f1e5",
+      "atualizadoEm": "2026-04-14T16:39:26.190Z",
+      "dadosJs": "dados-inter/extrato-01-04-2026-a-30-04-2026-csv.js",
+      "paginaHtml": "extrato-01-04-2026-a-30-04-2026-csv.html",
+      "totalLancamentos": 4
     }
   }
 }

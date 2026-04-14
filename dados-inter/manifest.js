@@ -19,5 +19,12 @@ window.INTER_CARGAS = [
         "paginaHtml": "extrato-01-01-2026-a-31-03-2026-csv.html",
         "periodo": "JANEIRO-2026 ate MARCO-2026",
         "totalLancamentos": 82
+    },
+    {
+        "arquivoCsv": "Extrato-01-04-2026-a-30-04-2026-CSV.csv",
+        "dadosJs": "dados-inter/extrato-01-04-2026-a-30-04-2026-csv.js",
+        "paginaHtml": "extrato-01-04-2026-a-30-04-2026-csv.html",
+        "periodo": "ABRIL-2026 ate ABRIL-2026",
+        "totalLancamentos": 4
     }
 ];
